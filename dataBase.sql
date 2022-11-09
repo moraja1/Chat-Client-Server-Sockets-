@@ -53,9 +53,9 @@ CREATE TABLE IF NOT EXISTS `chat`.`user`
 -- -----------------------------------------------------
 -- Table `chat`.`message_list`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `chat`.`message_list`
+CREATE TABLE IF NOT EXISTS `chat`.`message`
 (
-    `id_message_list` BIGINT
+    `id_message` BIGINT
 (
     20
 ) NOT NULL AUTO_INCREMENT,
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `chat`.`message_list`
     `date_time` TIMESTAMP NULL,
     PRIMARY KEY
 (
-    `id_message_list`
+    `id_message`
 ),
     INDEX `fk_remitent_idx`
 (
