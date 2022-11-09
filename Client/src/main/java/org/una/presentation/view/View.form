@@ -24,7 +24,7 @@
               <text value="Usuario"/>
             </properties>
           </component>
-          <component id="1cd89" class="javax.swing.JTextField" binding="id">
+          <component id="1cd89" class="javax.swing.JTextField" binding="username">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="100" height="-1"/>

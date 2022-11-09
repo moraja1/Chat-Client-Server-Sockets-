@@ -1,9 +1,10 @@
-package data.util;
+package data.model;
 
-import business.IService;
-import business.Protocol;
-import data.model.Message;
-import data.model.User;
+import data.model.repository.Message;
+import data.model.repository.User;
+import data.util.IService;
+import data.util.Protocol;
+import data.util.Server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,6 +17,7 @@ public class Worker implements Runnable{
     private IService service;
     private User user;
     boolean continuar = true;
+    private Thread threadParent;
     public Worker(Server srv, ObjectInputStream in, ObjectOutputStream out, User user, IService service) {
         this.srv=srv;
         this.in=in;
@@ -80,5 +82,8 @@ public class Worker implements Runnable{
         return user;
     }
 
-
+    public void setThreadParent(Thread threadParent) {
+        this.threadParent = threadParent;
+        this.threadParent.setName(user.getUsername());
+    }
 }

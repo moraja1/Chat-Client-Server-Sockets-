@@ -7,39 +7,40 @@ import org.una.presentation.model.User;
 import org.una.presentation.view.View;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
-public class Controller {
-    View view;
-    Model model;
-    
-    ServiceProxy localService;
-    
+public class Controller implements Observer {
+    private View view;
+    private Model model;
+    private ServiceProxy localService;
     public Controller(View view, Model model) {
         this.view = view;
         this.model = model;
-        localService = (ServiceProxy)ServiceProxy.instance();
+        localService = (ServiceProxy)ServiceProxy.getInstance();
         localService.setController(this);
         view.setController(this);
-        view.setModel(model);
+        view.initComponents();
     }
+    public void register(){
 
-    public void login(User u) throws Exception{
-        User logged=ServiceProxy.instance().login(u);
+    }
+    public void login() throws Exception{
+        User user = new User(view.getUsername().getText(), new String(view.getClave().getPassword()));
+        User logged = localService.login(user);
         model.setCurrentUser(logged);
         model.commit(Model.USER);
     }
-
     public void post(String text){
         Message message = new Message();
         message.setMessage(text);
-        message.setSender(model.getCurrentUser());
-        ServiceProxy.instance().post(message);
+        message.setRemitent(model.getCurrentUser());
+        ServiceProxy.getInstance().post(message);
         model.commit(Model.CHAT);
     }
-
     public void logout(){
         try {
-            ServiceProxy.instance().logout(model.getCurrentUser());
+            ServiceProxy.getInstance().logout(model.getCurrentUser());
             model.setMessages(new ArrayList<>());
             model.commit(Model.CHAT);
         } catch (Exception ex) {
@@ -47,9 +48,36 @@ public class Controller {
         model.setCurrentUser(null);
         model.commit(Model.USER+Model.CHAT);
     }
-        
     public void deliver(Message message){
         model.getMessages().add(message);
         model.commit(Model.CHAT);       
-    }    
+    }
+    @Override
+    public void update(Observable o, Object arg) {
+        int prop = (int) arg;
+
+        if (model.getCurrentUser() == null) {
+            view.setTitle("CHAT");
+            view.getLoginPanel().setVisible(true);
+            view.getBodyPanel().setVisible(false);
+        } else {
+            view.setTitle(model.getCurrentUser().getUsername().toUpperCase());
+            view.getLoginPanel().setVisible(false);;
+            view.getBodyPanel().setVisible(true);
+            view.getRootPane().setDefaultButton(view.getPostButton());
+            if ((prop & Model.CHAT) == Model.CHAT) {
+                view.getMessages().setText("");
+                String text = "";
+                for (Message m : model.getMessages()) {
+                    if (m.getRemitent().equals(model.getCurrentUser())) {
+                        text += ("Me:" + m.getMessage() + "\n");
+                    } else {
+                        text += (m.getRemitent().getUsername() + ": " + m.getMessage() + "\n");
+                    }
+                }
+                view.getMessages().setText(text);
+            }
+        }
+        view.getPanel().validate();
+    }
 }

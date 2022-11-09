@@ -1,6 +1,6 @@
 package data.dao;
 
-import data.model.User;
+import data.model.repository.User;
 
 import java.util.List;
 

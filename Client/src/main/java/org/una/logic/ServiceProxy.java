@@ -11,72 +11,71 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ServiceProxy implements IService{
+    private ObjectInputStream input;
+    private ObjectOutputStream output;
+    private Controller controller;
     private static IService theInstance;
-    public static IService instance(){
+    private Socket socket = null;
+
+    private ServiceProxy() {
+    }
+    public static IService getInstance(){
         if (theInstance==null){ 
             theInstance=new ServiceProxy();
         }
         return theInstance;
     }
-
-    ObjectInputStream in;
-    ObjectOutputStream out;
-    Controller controller;
-
-    public ServiceProxy() {           
-    }
-
-    public void setController(Controller controller) {
-        this.controller = controller;
-    }
-
-    Socket skt;
-    private void connect() throws Exception{
-        skt = new Socket(Protocol.SERVER,Protocol.PORT);
-        out = new ObjectOutputStream(skt.getOutputStream() );
-        out.flush();
-        in = new ObjectInputStream(skt.getInputStream());    
-    }
-
-    private void disconnect() throws Exception{
-        skt.shutdownOutput();
-        skt.close();
-    }
-    
-    public User login(User u) throws Exception{
-        connect();
+    public User login(User u) throws Exception {
+        if(socket == null){
+            connect();
+        }
         try {
-            out.writeInt(Protocol.LOGIN);
-            out.writeObject(u);
-            out.flush();
-            int response = in.readInt();
+            output.writeInt(Protocol.LOGIN);
+            output.writeObject(u);
+            output.flush();
+            int response = input.readInt();
             if (response==Protocol.ERROR_NO_ERROR){
-                User u1=(User) in.readObject();
+                User u1=(User) input.readObject();
                 this.start();
                 return u1;
             }
             else {
                 disconnect();
                 throw new Exception("No remote user");
-            }            
+            }
         } catch (IOException | ClassNotFoundException ex) {
             return null;
         }
     }
-    
-    public void logout(User u) throws Exception{
-        out.writeInt(Protocol.LOGOUT);
-        out.writeObject(u);
-        out.flush();
+    private void connect() throws Exception{
+        socket = new Socket(Protocol.SERVER, Protocol.PORT);
+        output = new ObjectOutputStream(socket.getOutputStream() );
+        output.flush();
+        input = new ObjectInputStream(socket.getInputStream());
+    }
+    private void disconnect() throws IOException {
+        socket.shutdownOutput();
+        socket.close();
+    }
+    @Override
+    public void register(User u) throws Exception {
+        if(socket == null){
+            connect();
+        }
+    }
+    public void logout(User u) throws IOException {
+        output.writeInt(Protocol.LOGOUT);
+        output.writeObject(u);
+        output.flush();
         this.stop();
         this.disconnect();
     }
     
     public void post(Message message){
         try {
-            out.writeInt(Protocol.POST);
-            out.writeObject(message);
-            out.flush();
+            output.writeInt(Protocol.POST);
+            output.writeObject(message);
+            output.flush();
         } catch (IOException ex) {
             
         }   
@@ -102,24 +101,23 @@ public class ServiceProxy implements IService{
         int method;
         while (continuar) {
             try {
-                method = in.readInt();
+                method = input.readInt();
                 System.out.println("DELIVERY");
                 System.out.println("Operacion: "+method);
                 switch(method){
                 case Protocol.DELIVER:
                     try {
-                        Message message=(Message)in.readObject();
+                        Message message=(Message) input.readObject();
                         deliver(message);
                     } catch (ClassNotFoundException ex) {}
                     break;
                 }
-                out.flush();
+                output.flush();
             } catch (IOException  ex) {
                 continuar = false;
             }                        
         }
     }
-    
    private void deliver( final Message message ){
       SwingUtilities.invokeLater(new Runnable(){
             public void run(){
@@ -128,4 +126,7 @@ public class ServiceProxy implements IService{
          }
       );
    }
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
 }
