@@ -116,19 +116,20 @@ public class Server {
         return user;
     }
     private User login(ObjectInputStream input, ObjectOutputStream output) throws LoginException {
-        User user = null;
+        String user = null;
         try {
-            user = (User) input.readObject();
-            if(user != null){
+            user = (String) input.readObject();
+            System.out.println(user);
+            /*if(user != null){
                 user = service.login(user);
                 output.writeInt(Protocol.ERROR_NO_ERROR);
                 output.writeObject(user);
                 output.flush();
-            }
+            }*/
         } catch (Exception e) {
             throw new LoginException();
         }
-        return user;
+        return null;
     }
     private User register(ObjectInputStream input, ObjectOutputStream output) throws RegisterException {
         User user = null;

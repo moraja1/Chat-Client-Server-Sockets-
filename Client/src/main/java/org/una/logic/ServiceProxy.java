@@ -1,14 +1,16 @@
 package org.una.logic;
 
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import org.una.logic.dto.ParserToJSON;
 import org.una.presentation.controller.Controller;
 import org.una.presentation.model.Message;
 import org.una.presentation.model.User;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class ServiceProxy implements IService{
     private ObjectInputStream input;
@@ -29,23 +31,25 @@ public class ServiceProxy implements IService{
         if(socket == null){
             connect();
         }
+        JsonObject user = ParserToJSON.UserToJson(u);
         try {
             output.writeInt(Protocol.LOGIN);
-            output.writeObject(u);
+            output.writeObject(user.toString());
             output.flush();
-            int response = input.readInt();
+            /*int response = input.read();
             if (response==Protocol.ERROR_NO_ERROR){
-                User u1=(User) input.readObject();
+                User u1=(User) input.read();
                 this.start();
                 return u1;
             }
             else {
                 disconnect();
                 throw new Exception("No remote user");
-            }
-        } catch (IOException | ClassNotFoundException ex) {
+            }*/
+        } catch (IOException /*| ClassNotFoundException*/ ex) {
             return null;
         }
+            return null;
     }
     @Override
     public void register(User u) throws Exception {
@@ -55,7 +59,7 @@ public class ServiceProxy implements IService{
     }
     private void connect() throws Exception{
         socket = new Socket(Protocol.SERVER, Protocol.PORT);
-        output = new ObjectOutputStream(socket.getOutputStream() );
+        output = new ObjectOutputStream(socket.getOutputStream());
         output.flush();
         input = new ObjectInputStream(socket.getInputStream());
     }
@@ -65,21 +69,21 @@ public class ServiceProxy implements IService{
     }
 
     public void logout(User u) throws IOException {
-        output.writeInt(Protocol.LOGOUT);
-        output.writeObject(u);
+        output.write(Protocol.LOGOUT);
+        /*output.write(u);
         output.flush();
         this.stop();
-        this.disconnect();
+        this.disconnect();*/
     }
     
     public void post(Message message){
-        try {
+        /*try {
             output.writeInt(Protocol.POST);
             output.writeObject(message);
             output.flush();
         } catch (IOException ex) {
             
-        }   
+        }   */
     }  
 
     // LISTENING FUNCTIONS
@@ -102,13 +106,13 @@ public class ServiceProxy implements IService{
         int method;
         while (continuar) {
             try {
-                method = input.readInt();
+                method = input.read();
                 System.out.println("DELIVERY");
                 System.out.println("Operacion: "+method);
                 switch(method){
                 case Protocol.DELIVER:
                     try {
-                        Message message=(Message) input.readObject();
+                        Message message = (Message) input.readObject();
                         deliver(message);
                     } catch (ClassNotFoundException ex) {}
                     break;

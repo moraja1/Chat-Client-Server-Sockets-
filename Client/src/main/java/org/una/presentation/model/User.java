@@ -3,20 +3,11 @@ package org.una.presentation.model;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    private Long idUser;
     private String username;
     private String password;
-    public User(String username, String password){
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
-    }
-
-    public Long getIdUser() {
-        return idUser;
-    }
-
-    public void setIdUser(Long idUser) {
-        this.idUser = idUser;
     }
 
     public String getUsername() {
