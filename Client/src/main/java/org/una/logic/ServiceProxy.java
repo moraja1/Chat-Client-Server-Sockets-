@@ -1,10 +1,6 @@
 package org.una.logic;
 
 import org.una.presentation.controller.Controller;
-import chatProtocol.IService;
-import chatProtocol.Message;
-import chatProtocol.Protocol;
-import chatProtocol.User;
 import org.una.presentation.model.Message;
 import org.una.presentation.model.User;
 

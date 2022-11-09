@@ -39,6 +39,7 @@ public class View extends JFrame implements Observer {
         } catch (Exception e) {}
         setContentPane(panel);
         setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         loginPanel.setVisible(true);
         getRootPane().setDefaultButton(login);

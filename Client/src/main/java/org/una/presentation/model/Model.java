@@ -5,9 +5,6 @@
  */
 package org.una.presentation.model;
 
-import chatProtocol.Message;
-import chatProtocol.User;
-
 import java.util.ArrayList;
 import java.util.List;
 
