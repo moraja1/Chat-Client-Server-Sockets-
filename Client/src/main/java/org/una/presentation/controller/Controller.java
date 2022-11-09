@@ -6,6 +6,7 @@ import org.una.presentation.model.Model;
 import org.una.presentation.model.User;
 import org.una.presentation.view.View;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -17,25 +18,33 @@ public class Controller implements Observer {
     public Controller(View view, Model model) {
         this.view = view;
         this.model = model;
-        localService = (ServiceProxy)ServiceProxy.getInstance();
-        localService.setController(this);
         view.setController(this);
         view.initComponents();
+        try{
+            localService = (ServiceProxy)ServiceProxy.getInstance();
+            localService.setController(this);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     public void register(){
 
     }
-    public void login() throws Exception{
-        User user = new User(view.getUsername().getText(), new String(view.getClave().getPassword()));
-        User logged = localService.login(user);
-        model.setCurrentUser(logged);
-        model.commit(Model.USER);
+    public void login(){
+        try {
+            User user = new User(view.getUsername().getText(), new String(view.getClave().getPassword()));
+            User logged = localService.login(user);
+            model.setCurrentUser(logged);
+            model.commit(Model.USER);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "No se pudo iniciar sessión", "El usuario ingresado no existe", JOptionPane.WARNING_MESSAGE);;
+        }
     }
     public void post(String text){
         Message message = new Message();
         message.setMessage(text);
         message.setRemitent(model.getCurrentUser());
-        ServiceProxy.getInstance().post(message);
+        localService.post(message);
         model.commit(Model.CHAT);
     }
     public void logout(){

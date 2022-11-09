@@ -9,8 +9,6 @@ import data.model.Worker;
 import data.util.Exceptions.LoginException;
 import data.util.Exceptions.OperationException;
 import data.util.Exceptions.RegisterException;
-import jdk.vm.ci.code.Register;
-import sun.rmi.transport.TransportConstants;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -42,7 +40,6 @@ public class Server {
         Socket socket = null;
         ObjectInputStream input=null;
         ObjectOutputStream output=null;
-
 
         while (!exit) {
             try {

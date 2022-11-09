@@ -19,9 +19,9 @@ public class ServiceProxy implements IService{
 
     private ServiceProxy() {
     }
-    public static IService getInstance(){
+    public static IService getInstance() throws Exception {
         if (theInstance==null){ 
-            theInstance=new ServiceProxy();
+            theInstance = new ServiceProxy();
         }
         return theInstance;
     }
@@ -47,6 +47,12 @@ public class ServiceProxy implements IService{
             return null;
         }
     }
+    @Override
+    public void register(User u) throws Exception {
+        if(socket == null){
+            connect();
+        }
+    }
     private void connect() throws Exception{
         socket = new Socket(Protocol.SERVER, Protocol.PORT);
         output = new ObjectOutputStream(socket.getOutputStream() );
@@ -57,12 +63,7 @@ public class ServiceProxy implements IService{
         socket.shutdownOutput();
         socket.close();
     }
-    @Override
-    public void register(User u) throws Exception {
-        if(socket == null){
-            connect();
-        }
-    }
+
     public void logout(User u) throws IOException {
         output.writeInt(Protocol.LOGOUT);
         output.writeObject(u);

@@ -1,8 +1,8 @@
 package org.una.presentation.model;
 
-import java.util.Set;
+import java.io.Serializable;
 
-public class User {
+public class User implements Serializable {
     private Long idUser;
     private String username;
     private String password;

@@ -20,17 +20,18 @@ public class Service implements IService {
         // if wants to save messages, ex. recivier no logged on
     }
 
-    public User login(User p) throws LoginException {
-        for(User u : usersLoggedIn){
-            if(p.equals(u)) {
-                return u;
+    public User login(User userInput) throws LoginException {
+        UserDAO dao = new UserDAO();
+        User user = dao.getSingleObject(userInput.getUsername(), userInput.getPassword());
+        if(user != null){
+            for(User u : usersLoggedIn){
+                if(user.equals(u)) {
+                    return u;
+                }
             }
-        }
-        dao = new UserDAO();
-        if(dao.exists(p.getIdUser())){
-            usersLoggedIn.add(p);
-            return p;
-        }else{
+            usersLoggedIn.add(user);
+            return user;
+        } else{
             throw new LoginException("Usuario no registrado");
         }
     } 
