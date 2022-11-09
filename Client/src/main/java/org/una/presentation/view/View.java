@@ -1,10 +1,10 @@
 package org.una.presentation.view;
 
-import org.una.Application;
+import org.una.application.Application;
 import org.una.presentation.controller.Controller;
+import org.una.presentation.model.Message;
 import org.una.presentation.model.Model;
-import chatProtocol.Message;
-import chatProtocol.User;
+import org.una.presentation.model.User;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
@@ -14,7 +14,7 @@ import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
-public class View implements Observer {
+public class View extends JFrame implements Observer {
     private JPanel panel;
     private JPanel loginPanel;
     private JPanel bodyPanel;
@@ -31,8 +31,17 @@ public class View implements Observer {
     Controller controller;
 
     public View() {
+        setSize(500,400);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("CHAT");
+        try {
+            setIconImage((new ImageIcon(Application.class.getResource("/logo.png"))).getImage());
+        } catch (Exception e) {}
+        setContentPane(panel);
+        setVisible(true);
+
         loginPanel.setVisible(true);
-        Application.window.getRootPane().setDefaultButton(login);
+        getRootPane().setDefaultButton(login);
         bodyPanel.setVisible(false);
 
         DefaultCaret caret = (DefaultCaret) messages.getCaret();
@@ -97,15 +106,15 @@ public class View implements Observer {
 
         int prop = (int) properties;
         if (model.getCurrentUser() == null) {
-            Application.window.setTitle("CHAT");
+            setTitle("CHAT");
             loginPanel.setVisible(true);
-            Application.window.getRootPane().setDefaultButton(login);
+            getRootPane().setDefaultButton(login);
             bodyPanel.setVisible(false);
         } else {
-            Application.window.setTitle(model.getCurrentUser().getNombre().toUpperCase());
+            setTitle(model.getCurrentUser().getNombre().toUpperCase());
             loginPanel.setVisible(false);
             bodyPanel.setVisible(true);
-            Application.window.getRootPane().setDefaultButton(post);
+            getRootPane().setDefaultButton(post);
             if ((prop & Model.CHAT) == Model.CHAT) {
                 this.messages.setText("");
                 String text = "";
