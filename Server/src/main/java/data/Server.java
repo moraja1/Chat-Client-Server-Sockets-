@@ -1,14 +1,17 @@
 
-package data.util;
+package data;
 
 import business.Service;
-import business.controller.ServerWindow;
 import data.model.repository.Message;
 import data.model.repository.User;
 import data.model.Worker;
 import data.util.Exceptions.LoginException;
 import data.util.Exceptions.OperationException;
 import data.util.Exceptions.RegisterException;
+import data.util.IService;
+import data.util.ParserToJSON;
+import data.util.Protocol;
+import business.controller.ServerWindow;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -94,12 +97,12 @@ public class Server {
             throw new OperationException();
         }
         switch (method){
-            case Protocol.LOGIN:
+            case Protocol.LOGIN: //******************************LOGIN***********************
             {
                 user = login(input, output);
                 break;
             }
-            case Protocol.REGISTER:
+            case Protocol.REGISTER: //******************************REGISTER***********************
             {
                 user = register(input, output);
                 break;
@@ -119,6 +122,7 @@ public class Server {
         String userJson = null;
         User user;
         try {
+            //Read user info
             userJson = (String) input.readObject();
             System.out.println(userJson);
             user = ParserToJSON.JsonToUser(userJson);
@@ -133,8 +137,10 @@ public class Server {
 
                 //Send Pending Messages
                 List<Message> pendingMessages = service.getPendingMessages(user);
+
                 String pendingMessagesJson = "";
                 if(!pendingMessages.isEmpty()) {
+
                     pendingMessagesJson = ParserToJSON.PendingMessagesToJson(pendingMessages);
                 }
                 output.writeInt(Protocol.DELIVER_COLLECTION);

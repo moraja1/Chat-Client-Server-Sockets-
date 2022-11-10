@@ -1,6 +1,6 @@
 package business.controller;
 
-import data.util.Server;
+import data.Server;
 
 import javax.swing.*;
 import java.awt.*;

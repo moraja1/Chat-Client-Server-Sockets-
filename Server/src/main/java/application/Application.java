@@ -1,6 +1,6 @@
 package application;
 
-import data.util.Server;
+import data.Server;
 
 public class Application {
     

@@ -4,7 +4,7 @@ import data.model.repository.Message;
 import data.model.repository.User;
 import data.util.IService;
 import data.util.Protocol;
-import data.util.Server;
+import data.Server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

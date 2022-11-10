@@ -21,16 +21,12 @@ public class ParserToJSON {
         return user;
     }
     public static String MessageToJson(User user){
-        JsonbConfig config = new JsonbConfig()
-                .withAdapters(new MessageAdapter());
-        Jsonb jsonb = JsonbBuilder.create(config);
+        Jsonb jsonb = JsonbBuilder.create();
         String messageJson = jsonb.toJson(user);
         return messageJson;
     }
     public static Message JsonToMessage(String messageJson) {
-        JsonbConfig config = new JsonbConfig()
-                .withAdapters(new MessageAdapter());
-        Jsonb jsonb = JsonbBuilder.create(config);
+        Jsonb jsonb = JsonbBuilder.create();
         Message message = jsonb.fromJson(messageJson, Message.class);
         return message;
     }

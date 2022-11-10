@@ -1,17 +1,26 @@
-package org.una.presentation.model;
+package data.dto;
 
+import data.model.repository.Message;
 import jakarta.json.bind.annotation.JsonbProperty;
 
 import java.time.LocalDate;
 
-public class Message {
+public class MessageDetails {
     private String message;
     private String remitent;
     private String destinatary;
     private LocalDate dateTime;
 
-    public Message() {
+    public MessageDetails() {
     }
+
+    public MessageDetails(Message message) {
+        this.message = message.getMessage();
+        this.remitent = message.getRemitent().getUsername();
+        this.destinatary = message.getDestinatary().getUsername();
+        this.dateTime = message.getDateTime().toLocalDateTime().toLocalDate();
+    }
+
     @JsonbProperty("message")
     public String getMessage() {
         return message;
