@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `chat`.`user`
     `id_user` BIGINT
 (
     20
-) NOT NULL,
+) NOT NULL auto_increment,
     `username` VARCHAR
 (
     32
@@ -201,3 +201,8 @@ SET
 FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET
 UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+insert into user
+(username, password)
+values
+("jaison", "admin");

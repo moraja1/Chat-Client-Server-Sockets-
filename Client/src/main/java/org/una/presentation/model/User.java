@@ -1,10 +1,14 @@
 package org.una.presentation.model;
 
-import java.io.Serializable;
+import jakarta.json.bind.annotation.JsonbProperty;
 
-public class User implements Serializable {
+
+public class User {
+    @JsonbProperty("username")
     private String username;
+    @JsonbProperty("password")
     private String password;
+    public User(){}
     public User(String username, String password) {
         this.username = username;
         this.password = password;

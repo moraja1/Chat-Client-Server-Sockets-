@@ -2,6 +2,7 @@ package org.una.logic;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
+import jakarta.json.bind.Jsonb;
 import org.una.logic.dto.ParserToJSON;
 import org.una.presentation.controller.Controller;
 import org.una.presentation.model.Message;
@@ -31,10 +32,10 @@ public class ServiceProxy implements IService{
         if(socket == null){
             connect();
         }
-        JsonObject user = ParserToJSON.UserToJson(u);
+        String user = ParserToJSON.UserToJson(u);
         try {
             output.writeInt(Protocol.LOGIN);
-            output.writeObject(user.toString());
+            output.writeObject(user);
             output.flush();
             /*int response = input.read();
             if (response==Protocol.ERROR_NO_ERROR){

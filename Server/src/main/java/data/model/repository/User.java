@@ -1,5 +1,6 @@
 package data.model.repository;
 
+import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -18,9 +19,11 @@ public class User {
     private Long idUser;
     @Basic
     @Column(name = "username")
+    @JsonbProperty("username")
     private String username;
     @Basic
     @Column(name = "password")
+    @JsonbProperty("password")
     private String password;
     @OneToMany(mappedBy = "userByIdUser")
     private Set<Group> groupsByIdUser;

@@ -116,10 +116,13 @@ public class Server {
         return user;
     }
     private User login(ObjectInputStream input, ObjectOutputStream output) throws LoginException {
-        String user = null;
+        String userJson = null;
+        User user;
         try {
-            user = (String) input.readObject();
-            System.out.println(user);
+            userJson = (String) input.readObject();
+            System.out.println(userJson);
+            user = ParserToJSON.JsonToUser(userJson);
+            System.out.println(user.getUsername());
             /*if(user != null){
                 user = service.login(user);
                 output.writeInt(Protocol.ERROR_NO_ERROR);
