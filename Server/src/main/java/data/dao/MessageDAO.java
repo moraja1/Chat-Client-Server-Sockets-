@@ -16,7 +16,7 @@ public class MessageDAO extends DAO<Message> {
     }
 
     @Override
-    public Message getSingleObject(Integer key) {
+    public Message getSingleObject(Long key) {
         return null;
     }
 

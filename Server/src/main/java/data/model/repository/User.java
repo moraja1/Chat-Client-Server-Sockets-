@@ -12,7 +12,8 @@ import java.util.Set;
         @NamedQuery(name = "User.findAll", query = "select u from User u"),
         @NamedQuery(name = "User.findByUsernameAndPassword", query = "select u from User u where u.username = :username and u.password = :password"),
         @NamedQuery(name = "User.existsByUsernameAndPassword", query = "select (count(u) > 0) from User u where u.username = :username and u.password = :password"),
-        @NamedQuery(name = "User.findByIdUser", query = "select u from User u where u.idUser = :idUser")
+        @NamedQuery(name = "User.findByIdUser", query = "select u from User u where u.idUser = :idUser"),
+        @NamedQuery(name = "User.findByUsername", query = "select u from User u where u.username = :username")
 })
 public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

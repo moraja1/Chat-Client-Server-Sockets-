@@ -2,6 +2,7 @@ package org.una.logic.dto;
 
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
+import jakarta.json.bind.JsonbConfig;
 import org.una.presentation.model.Message;
 import org.una.presentation.model.User;
 
@@ -20,12 +21,16 @@ public class ParserToJSON {
         return user;
     }
     public static String MessageToJson(User user){
-        Jsonb jsonb = JsonbBuilder.create();
-        String userJSON = jsonb.toJson(user);
-        return userJSON;
+        JsonbConfig config = new JsonbConfig()
+                .withAdapters(new MessageAdapter());
+        Jsonb jsonb = JsonbBuilder.create(config);
+        String messageJson = jsonb.toJson(user);
+        return messageJson;
     }
     public static Message JsonToMessage(String messageJson) {
-        Jsonb jsonb = JsonbBuilder.create();
+        JsonbConfig config = new JsonbConfig()
+                .withAdapters(new MessageAdapter());
+        Jsonb jsonb = JsonbBuilder.create(config);
         Message message = jsonb.fromJson(messageJson, Message.class);
         return message;
     }

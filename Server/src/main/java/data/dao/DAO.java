@@ -84,5 +84,5 @@ public abstract class DAO<T>{
         return true;
     }
     public abstract List<T> getAllObjects();
-    public abstract T getSingleObject(Integer key);
+    public abstract T getSingleObject(Long key);
 }

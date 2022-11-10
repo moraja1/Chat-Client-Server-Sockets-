@@ -1,6 +1,8 @@
 package data.model.repository;
 
+import jakarta.json.bind.annotation.JsonbNumberFormat;
 import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
@@ -14,25 +16,21 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id_message")
-    private Long idMessageList;
+    @JsonbTransient
+    private Long idMessage;
     @Basic
     @Column(name = "message")
-    @JsonbProperty("message")
     private String message;
     @Basic
     @Column(name = "date_time")
-    @JsonbProperty("dateTime")
     private Timestamp dateTime;
     @ManyToOne
     @JoinColumn(name = "remitent", referencedColumnName = "id_user", nullable = false)
-    @JsonbProperty("remitent")
     private User remitent;
     @ManyToOne
     @JoinColumn(name = "destinatary", referencedColumnName = "id_user", nullable = false)
-    @JsonbProperty("destinatary")
     private User destinatary;
     @Column(name = "delivered")
-    @JsonbProperty("delivered")
     private Boolean delivered;
     public Boolean isDelivered() {
         return delivered;
@@ -40,21 +38,27 @@ public class Message {
     public void setDelivered(Boolean delivered) {
         this.delivered = delivered;
     }
-    public Long getIdMessageList() {
-        return idMessageList;
+    @JsonbProperty("")
+    public Long getIdMessage() {
+        return idMessage;
     }
-    public void setIdMessageList(Long idMessageList) {
-        this.idMessageList = idMessageList;
+    public void setIdMessage(Long idMessage) {
+        this.idMessage = idMessage;
     }
+    @JsonbProperty("message")
     public String getMessage() {
         return message;
     }
+    @JsonbProperty("message")
     public void setMessage(String message) {
         this.message = message;
     }
+    @JsonbProperty("dateTime")
+    @JsonbNumberFormat("#")
     public Timestamp getDateTime() {
         return dateTime;
     }
+    @JsonbProperty("dateTime")
     public void setDateTime(Timestamp dateTime) {
         this.dateTime = dateTime;
     }
@@ -65,7 +69,7 @@ public class Message {
 
         Message that = (Message) o;
 
-        if (idMessageList != null ? !idMessageList.equals(that.idMessageList) : that.idMessageList != null)
+        if (idMessage != null ? !idMessage.equals(that.idMessage) : that.idMessage != null)
             return false;
         if (message != null ? !message.equals(that.message) : that.message != null) return false;
         if (dateTime != null ? !dateTime.equals(that.dateTime) : that.dateTime != null) return false;
@@ -74,7 +78,7 @@ public class Message {
     }
     @Override
     public int hashCode() {
-        int result = idMessageList != null ? idMessageList.hashCode() : 0;
+        int result = idMessage != null ? idMessage.hashCode() : 0;
         result = 31 * result + (message != null ? message.hashCode() : 0);
         result = 31 * result + (dateTime != null ? dateTime.hashCode() : 0);
         return result;

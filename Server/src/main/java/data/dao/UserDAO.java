@@ -32,7 +32,7 @@ public class UserDAO extends DAO<User>{
     }
 
     @Override
-    public User getSingleObject(Integer key) {
+    public User getSingleObject(Long key) {
         User user = null;
         Transaction transaction = null;
         Session session;
@@ -62,6 +62,25 @@ public class UserDAO extends DAO<User>{
             TypedQuery<User> query = session.createNamedQuery("User.findByUsernameAndPassword", User.class);
             query.setParameter("username", username);
             query.setParameter("password", password);
+            user = query.getSingleResult();
+            transaction.commit();
+            session.close();
+        }catch(Exception ex){
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
+        return user;
+    }
+    public User getSingleObject(String username) {
+        User user = null;
+        Transaction transaction = null;
+        Session session;
+        try {
+            session = sessionFactory.openSession();
+            transaction = session.beginTransaction();
+            TypedQuery<User> query = session.createNamedQuery("User.findByUsername", User.class);
+            query.setParameter("username", username);
             user = query.getSingleResult();
             transaction.commit();
             session.close();

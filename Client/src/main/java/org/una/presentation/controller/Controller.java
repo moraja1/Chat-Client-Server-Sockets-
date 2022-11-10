@@ -12,8 +12,6 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 public class Controller {
     private View view;
@@ -50,7 +48,7 @@ public class Controller {
     public void post(String text){
         Message message = new Message();
         message.setMessage(text);
-        message.setRemitent(model.getCurrentUser());
+        message.setRemitent(model.getCurrentUser().getUsername());
         localService.post(message);
         //model.commit(Model.CHAT);
     }
@@ -75,7 +73,7 @@ public class Controller {
             if (m.getRemitent().equals(model.getCurrentUser())) {
                 text += ("Me:" + m.getMessage() + "\n");
             } else {
-                text += (m.getRemitent().getUsername() + ": " + m.getMessage() + "\n");
+                text += (m.getRemitent() + ": " + m.getMessage() + "\n");
             }
         }
         view.getMessages().setText(text);

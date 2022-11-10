@@ -1,40 +1,48 @@
 package org.una.presentation.model;
 
+import jakarta.json.bind.annotation.JsonbNumberFormat;
+import jakarta.json.bind.annotation.JsonbProperty;
+
 import java.sql.Timestamp;
 public class Message {
     private String message;
-    private User remitent;
-    private User destinatary;
+    private String remitent;
+    private String destinatary;
     private Timestamp dateTime;
 
+    public Message() {
+    }
+    @JsonbProperty("message")
     public String getMessage() {
         return message;
     }
-
+    @JsonbProperty("message")
     public void setMessage(String message) {
         this.message = message;
     }
-
+    @JsonbProperty("dateTime")
+    @JsonbNumberFormat("#")
     public Timestamp getDateTime() {
         return dateTime;
     }
-
+    @JsonbProperty("dateTime")
     public void setDateTime(Timestamp dateTime) {
         this.dateTime = dateTime;
     }
-    public User getRemitent() {
+    @JsonbProperty("remitent")
+    public String getRemitent() {
         return remitent;
     }
-
-    public void setRemitent(User remitent) {
+    @JsonbProperty("remitent")
+    public void setRemitent(String remitent) {
         this.remitent = remitent;
     }
-
-    public User getDestinatary() {
+    @JsonbProperty("destinatary")
+    public String getDestinatary() {
         return destinatary;
     }
-
-    public void setDestinatary(User destinatary) {
+    @JsonbProperty("destinatary")
+    public void setDestinatary(String destinatary) {
         this.destinatary = destinatary;
     }
 }
