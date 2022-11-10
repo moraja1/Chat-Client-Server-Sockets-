@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `chat`.`user`
 
 
 -- -----------------------------------------------------
--- Table `chat`.`message_list`
+-- Table `chat`.`message`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `chat`.`message`
 (
@@ -70,8 +70,9 @@ CREATE TABLE IF NOT EXISTS `chat`.`message`
     `message` VARCHAR
 (
     512
-) NULL,
-    `date_time` TIMESTAMP NULL,
+) DEFAULT NULL,
+    `date_time` TIMESTAMP DEFAULT NULL,
+    `delivered` BOOLEAN DEFAULT FALSE,
     PRIMARY KEY
 (
     `id_message`

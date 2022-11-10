@@ -3,6 +3,8 @@ package org.una.logic;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.bind.Jsonb;
+import org.una.Exceptions.LoginException;
+import org.una.Exceptions.OperationException;
 import org.una.logic.dto.ParserToJSON;
 import org.una.presentation.controller.Controller;
 import org.una.presentation.model.Message;
@@ -12,6 +14,7 @@ import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class ServiceProxy implements IService{
     private ObjectInputStream input;
@@ -19,56 +22,46 @@ public class ServiceProxy implements IService{
     private Controller controller;
     private static IService theInstance;
     private Socket socket = null;
+    boolean continuar = true;
 
     private ServiceProxy() {
     }
     public static IService getInstance() throws Exception {
-        if (theInstance==null){ 
+        if (theInstance==null){
             theInstance = new ServiceProxy();
         }
         return theInstance;
     }
-    public User login(User u) throws Exception {
+
+    //OVERRIDEN FUNCTIONS
+
+    @Override
+    public User login(User u) throws LoginException, OperationException, IOException, ClassNotFoundException {
         if(socket == null){
             connect();
         }
-        String user = ParserToJSON.UserToJson(u);
+        String userJson = ParserToJSON.UserToJson(u);
         try {
             output.writeInt(Protocol.LOGIN);
-            output.writeObject(user);
+            output.writeObject(userJson);
             output.flush();
-            /*int response = input.read();
-            if (response==Protocol.ERROR_NO_ERROR){
-                User u1=(User) input.read();
+            int response = input.readInt();
+            if (response == Protocol.ERROR_NO_ERROR){
+                String userResponse = (String) input.readObject();
+                User user = ParserToJSON.JsonToUser(userResponse);
                 this.start();
-                return u1;
-            }
-            else {
+                return user;
+            } else if (response == Protocol.ERROR_LOGIN) {
+                throw new LoginException();
+            } else {
                 disconnect();
-                throw new Exception("No remote user");
-            }*/
-        } catch (IOException /*| ClassNotFoundException*/ ex) {
-            return null;
+                throw new OperationException();
+            }
+        } catch (IOException ex) {
+            throw new OperationException();
         }
-            return null;
     }
     @Override
-    public void register(User u) throws Exception {
-        if(socket == null){
-            connect();
-        }
-    }
-    private void connect() throws Exception{
-        socket = new Socket(Protocol.SERVER, Protocol.PORT);
-        output = new ObjectOutputStream(socket.getOutputStream());
-        output.flush();
-        input = new ObjectInputStream(socket.getInputStream());
-    }
-    private void disconnect() throws IOException {
-        socket.shutdownOutput();
-        socket.close();
-    }
-
     public void logout(User u) throws IOException {
         output.write(Protocol.LOGOUT);
         /*output.write(u);
@@ -76,20 +69,34 @@ public class ServiceProxy implements IService{
         this.stop();
         this.disconnect();*/
     }
-    
+    @Override
+    public void register(User u) throws Exception {
+        if(socket == null){
+            connect();
+        }
+    }
+    @Override
     public void post(Message message){
         /*try {
             output.writeInt(Protocol.POST);
             output.writeObject(message);
             output.flush();
         } catch (IOException ex) {
-            
-        }   */
-    }  
 
-    // LISTENING FUNCTIONS
-   boolean continuar = true;    
-   public void start(){
+        }   */
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+
+    //OPERATIONAL FUNCTIONS
+    private void connect() throws IOException{
+        socket = new Socket(Protocol.SERVER, Protocol.PORT);
+        output = new ObjectOutputStream(socket.getOutputStream());
+        output.flush();
+        input = new ObjectInputStream(socket.getInputStream());
+    }
+
+    private void start(){
         System.out.println("Client worker atendiendo peticiones...");
         Thread t = new Thread(new Runnable(){
             public void run(){
@@ -99,24 +106,48 @@ public class ServiceProxy implements IService{
         continuar = true;
         t.start();
     }
-    public void stop(){
+    private void disconnect() throws IOException {
+        socket.shutdownOutput();
+        socket.close();
+    }
+    private void stop(){
         continuar=false;
     }
-    
-   public void listen(){
+    //-----------------------------------------------------------------------------------------------------------------
+
+    // LISTENING FUNCTIONS
+    private void listen(){
         int method;
         while (continuar) {
             try {
-                method = input.read();
+                method = input.readInt();
                 System.out.println("DELIVERY");
-                System.out.println("Operacion: "+method);
+                System.out.println("Operacion: " + method);
                 switch(method){
-                case Protocol.DELIVER:
+                case Protocol.DELIVER: {
                     try {
-                        Message message = (Message) input.readObject();
-                        deliver(message);
-                    } catch (ClassNotFoundException ex) {}
+                        String messageJson = (String) input.readObject();
+                        if(!messageJson.isEmpty()){
+                            Message message = ParserToJSON.JsonToMessage(messageJson);
+                            deliver(message);
+                        }
+                    } catch (ClassNotFoundException ex) {
+                    }
                     break;
+                }
+                case Protocol.DELIVER_COLLECTION: {
+                    try {
+                        String messagesJson = (String) input.readObject();
+                        if(!messagesJson.isEmpty()){
+                            List<Message> messages = ParserToJSON.JsonToMessageList(messagesJson);
+                            for(Message message : messages){
+                                deliver(message);
+                            }
+                        }
+                    } catch (ClassNotFoundException ex) {
+                    }
+                    break;
+                }
                 }
                 output.flush();
             } catch (IOException  ex) {
@@ -132,7 +163,10 @@ public class ServiceProxy implements IService{
          }
       );
    }
-    public void setController(Controller controller) {
+   //------------------------------------------------------------------------------------------------------------------
+
+   //MEMBER FUNCTIONS
+   public void setController(Controller controller) {
         this.controller = controller;
     }
 }

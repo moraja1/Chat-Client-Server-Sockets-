@@ -1,6 +1,8 @@
 package data.model.repository;
 
+import jakarta.json.bind.annotation.JsonbNumberFormat;
 import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -19,39 +21,41 @@ public class User {
     private Long idUser;
     @Basic
     @Column(name = "username")
-    @JsonbProperty("username")
     private String username;
     @Basic
     @Column(name = "password")
-    @JsonbProperty("password")
     private String password;
     @OneToMany(mappedBy = "userByIdUser")
+    @JsonbTransient
     private Set<Group> groupsByIdUser;
     @OneToMany(mappedBy = "destinatary")
+    @JsonbTransient
     private Set<Message> messages;
-
+    @JsonbProperty("idUser")
     public Long getIdUser() {
         return idUser;
     }
-
+    @JsonbProperty("idUser")
     public void setIdUser(Long idUser) {
         this.idUser = idUser;
     }
-
+    @JsonbProperty("username")
     public String getUsername() {
         return username;
     }
-
+    @JsonbProperty("username")
     public void setUsername(String username) {
         this.username = username;
     }
-
+    @JsonbProperty("password")
     public String getPassword() {
         return password;
     }
-
+    @JsonbProperty("password")
     public void setPassword(String password) {
         this.password = password;
+    }
+    public User() {
     }
 
     @Override
@@ -75,19 +79,19 @@ public class User {
         result = 31 * result + (password != null ? password.hashCode() : 0);
         return result;
     }
-
+    @JsonbTransient
     public Set<Group> getGroupsByIdUser() {
         return groupsByIdUser;
     }
-
+    @JsonbTransient
     public void setGroupsByIdUser(Set<Group> groupsByIdUser) {
         this.groupsByIdUser = groupsByIdUser;
     }
-
+    @JsonbTransient
     public Set<Message> getMessageLists() {
         return messages;
     }
-
+    @JsonbTransient
     public void setMessageLists(Set<Message> messages) {
         this.messages = messages;
     }

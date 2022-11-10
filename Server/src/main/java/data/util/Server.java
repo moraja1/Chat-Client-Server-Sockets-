@@ -122,17 +122,29 @@ public class Server {
             userJson = (String) input.readObject();
             System.out.println(userJson);
             user = ParserToJSON.JsonToUser(userJson);
-            System.out.println(user.getUsername());
-            /*if(user != null){
+            if(user != null){
+                //Try to log in
                 user = service.login(user);
+                userJson = null;
+                userJson = ParserToJSON.UserToJson(user);
                 output.writeInt(Protocol.ERROR_NO_ERROR);
-                output.writeObject(user);
+                output.writeObject(userJson);
                 output.flush();
-            }*/
+
+                //Send Pending Messages
+                List<Message> pendingMessages = service.getPendingMessages(user);
+                String pendingMessagesJson = "";
+                if(!pendingMessages.isEmpty()) {
+                    pendingMessagesJson = ParserToJSON.PendingMessagesToJson(pendingMessages);
+                }
+                output.writeInt(Protocol.DELIVER_COLLECTION);
+                output.writeObject(pendingMessagesJson);
+                output.flush();
+            }
         } catch (Exception e) {
             throw new LoginException();
         }
-        return null;
+        return user;
     }
     private User register(ObjectInputStream input, ObjectOutputStream output) throws RegisterException {
         User user = null;

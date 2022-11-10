@@ -17,4 +17,5 @@ public class Protocol {
     public static final int ERROR_LOGOUT=13;
     public static final int ERROR_OPERATON = 14;
     public static final int ERROR_REGISTER=15;
+    public static final int DELIVER_COLLECTION = 16;
 }

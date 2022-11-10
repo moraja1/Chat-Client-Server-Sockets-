@@ -5,13 +5,10 @@
  */
 package org.una.presentation.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Model extends java.util.Observable implements Serializable {
-    public static final int USER=1;
-    public static final int CHAT=2;
+public class Model {
     private User currentUser;
     private List<Message> messages;
     public Model() {
@@ -29,13 +26,5 @@ public class Model extends java.util.Observable implements Serializable {
     }
     public void setMessages(List<Message> messages) {
         this.messages = messages;
-    }
-    public void addObserver(java.util.Observer o) {
-        super.addObserver(o);
-        this.commit(Model.USER+Model.CHAT);
-    }
-    public void commit(int properties){
-        this.setChanged();
-        this.notifyObservers(properties);        
     }
 }

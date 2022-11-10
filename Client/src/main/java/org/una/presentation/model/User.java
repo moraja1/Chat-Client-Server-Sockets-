@@ -2,11 +2,10 @@ package org.una.presentation.model;
 
 import jakarta.json.bind.annotation.JsonbProperty;
 
-
 public class User {
-    @JsonbProperty("username")
+
+    private Long idUser;
     private String username;
-    @JsonbProperty("password")
     private String password;
     public User(){}
     public User(String username, String password) {
@@ -14,18 +13,32 @@ public class User {
         this.password = password;
     }
 
+    public User(Long idUser, String username, String password) {
+        this.idUser = idUser;
+        this.username = username;
+        this.password = password;
+    }
+    @JsonbProperty("idUser")
+    public Long getIdUser() {
+        return idUser;
+    }
+    @JsonbProperty("idUser")
+    public void setIdUser(Long idUser) {
+        this.idUser = idUser;
+    }
+    @JsonbProperty("username")
     public String getUsername() {
         return username;
     }
-
+    @JsonbProperty("username")
     public void setUsername(String username) {
         this.username = username;
     }
-
+    @JsonbProperty("password")
     public String getPassword() {
         return password;
     }
-
+    @JsonbProperty("password")
     public void setPassword(String password) {
         this.password = password;
     }

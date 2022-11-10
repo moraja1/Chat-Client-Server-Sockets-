@@ -5,9 +5,12 @@ import data.model.repository.User;
 import data.util.Exceptions.LoginException;
 import data.util.Exceptions.RegisterException;
 
+import java.util.List;
+
 public interface IService {
-    public User register(User u) throws RegisterException;
-    public User login(User u) throws LoginException;
-    public void logout(User u) throws Exception; 
-    public void post(Message m);
+    User register(User u) throws RegisterException;
+    User login(User u) throws LoginException;
+    void logout(User u) throws Exception;
+    void post(Message m);
+    List<Message> getPendingMessages(User user);
 }

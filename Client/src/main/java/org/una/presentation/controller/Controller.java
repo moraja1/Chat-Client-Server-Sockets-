@@ -1,5 +1,7 @@
 package org.una.presentation.controller;
 
+import org.una.Exceptions.LoginException;
+import org.una.Exceptions.OperationException;
 import org.una.logic.ServiceProxy;
 import org.una.presentation.model.Message;
 import org.una.presentation.model.Model;
@@ -7,11 +9,13 @@ import org.una.presentation.model.User;
 import org.una.presentation.view.View;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-public class Controller implements Observer {
+public class Controller {
     private View view;
     private Model model;
     private ServiceProxy localService;
@@ -35,9 +39,12 @@ public class Controller implements Observer {
             User user = new User(view.getUsername().getText(), new String(view.getClave().getPassword()));
             User logged = localService.login(user);
             model.setCurrentUser(logged);
-            model.commit(Model.USER);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "No se pudo iniciar sessión", "El usuario ingresado no existe", JOptionPane.WARNING_MESSAGE);;
+            view.loginAccepted(logged.getUsername());
+            //model.commit(Model.USER);
+        } catch (LoginException e) {
+            JOptionPane.showMessageDialog(null, "El usuario ingresado no existe", "No se pudo iniciar sessión", JOptionPane.WARNING_MESSAGE);
+        } catch (OperationException | IOException | ClassNotFoundException ex){
+            JOptionPane.showMessageDialog(null, "Existe un problema de conexión", "No se pudo iniciar sessión", JOptionPane.WARNING_MESSAGE);
         }
     }
     public void post(String text){
@@ -45,48 +52,32 @@ public class Controller implements Observer {
         message.setMessage(text);
         message.setRemitent(model.getCurrentUser());
         localService.post(message);
-        model.commit(Model.CHAT);
+        //model.commit(Model.CHAT);
     }
     public void logout(){
         try {
             ServiceProxy.getInstance().logout(model.getCurrentUser());
             model.setMessages(new ArrayList<>());
-            model.commit(Model.CHAT);
+            //model.commit(Model.CHAT);
         } catch (Exception ex) {
         }
         model.setCurrentUser(null);
-        model.commit(Model.USER+Model.CHAT);
+        //model.commit(Model.USER+Model.CHAT);
     }
     public void deliver(Message message){
         model.getMessages().add(message);
-        model.commit(Model.CHAT);       
+        updateMessages(model.getMessages());
     }
-    @Override
-    public void update(Observable o, Object arg) {
-        int prop = (int) arg;
-
-        if (model.getCurrentUser() == null) {
-            view.setTitle("CHAT");
-            view.getLoginPanel().setVisible(true);
-            view.getBodyPanel().setVisible(false);
-        } else {
-            view.setTitle(model.getCurrentUser().getUsername().toUpperCase());
-            view.getLoginPanel().setVisible(false);;
-            view.getBodyPanel().setVisible(true);
-            view.getRootPane().setDefaultButton(view.getPostButton());
-            if ((prop & Model.CHAT) == Model.CHAT) {
-                view.getMessages().setText("");
-                String text = "";
-                for (Message m : model.getMessages()) {
-                    if (m.getRemitent().equals(model.getCurrentUser())) {
-                        text += ("Me:" + m.getMessage() + "\n");
-                    } else {
-                        text += (m.getRemitent().getUsername() + ": " + m.getMessage() + "\n");
-                    }
-                }
-                view.getMessages().setText(text);
+    public void updateMessages(List<Message> messages) {
+        view.getMessages().setText("");
+        String text = "";
+        for (Message m : messages) {
+            if (m.getRemitent().equals(model.getCurrentUser())) {
+                text += ("Me:" + m.getMessage() + "\n");
+            } else {
+                text += (m.getRemitent().getUsername() + ": " + m.getMessage() + "\n");
             }
         }
-        view.getPanel().validate();
+        view.getMessages().setText(text);
     }
 }

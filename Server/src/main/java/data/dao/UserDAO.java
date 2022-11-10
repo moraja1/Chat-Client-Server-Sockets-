@@ -69,7 +69,6 @@ public class UserDAO extends DAO<User>{
             if (transaction != null) {
                 transaction.rollback();
             }
-            ex.printStackTrace();
         }
         return user;
     }

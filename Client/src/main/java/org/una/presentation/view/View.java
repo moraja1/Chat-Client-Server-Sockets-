@@ -46,6 +46,8 @@ public class View extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(!username.getText().isEmpty() && !new String(clave.getPassword()).isEmpty()){
+                    username.setBackground(Color.white);
+                    clave.setBackground(Color.white);
                     try {
                         controller.login();
                         username.setText("");
@@ -110,5 +112,13 @@ public class View extends JFrame {
     }
     public JPasswordField getClave() {
         return clave;
+    }
+    public void loginAccepted(String username) {
+
+        setTitle(username.toUpperCase());
+        getLoginPanel().setVisible(false);;
+        getBodyPanel().setVisible(true);
+        getRootPane().setDefaultButton(post);
+        panel.validate();
     }
 }

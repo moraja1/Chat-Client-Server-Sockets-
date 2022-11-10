@@ -1,22 +1,11 @@
 package org.una.presentation.model;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
-public class Message implements Serializable {
-
-    private Long idMessageList;
+public class Message {
     private String message;
-    private Timestamp dateTime;
     private User remitent;
     private User destinatary;
-
-    public Long getIdMessageList() {
-        return idMessageList;
-    }
-
-    public void setIdMessageList(Long idMessageList) {
-        this.idMessageList = idMessageList;
-    }
+    private Timestamp dateTime;
 
     public String getMessage() {
         return message;
