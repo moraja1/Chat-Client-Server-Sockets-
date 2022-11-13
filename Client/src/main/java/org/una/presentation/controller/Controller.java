@@ -3,21 +3,23 @@ package org.una.presentation.controller;
 import org.una.Exceptions.LoginException;
 import org.una.Exceptions.OperationException;
 import org.una.logic.ServiceProxy;
+import org.una.logic.jsonFileAdmin;
+import org.una.presentation.view.ChatView;
 import org.una.presentation.model.Message;
 import org.una.presentation.model.Model;
 import org.una.presentation.model.User;
-import org.una.presentation.view.View;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Controller {
-    private View view;
+    private ChatView view;
     private Model model;
     private ServiceProxy localService;
-    public Controller(View view, Model model) {
+    private List<String> contactsList;
+    public Controller(ChatView view, Model model) {
         this.view = view;
         this.model = model;
         view.setController(this);
@@ -38,7 +40,9 @@ public class Controller {
             User logged = localService.login(user);
             model.setCurrentUser(logged);
             view.loginAccepted(logged.getUsername());
-            //model.commit(Model.USER);
+            String contactsJson = jsonFileAdmin.loadContacts(user.getUsername());
+            contactsList = jsonFileAdmin.contactListFromJason(contactsJson);
+            view.setContactListValues(contactsList.toArray(new String[contactsList.size()]));
         } catch (LoginException e) {
             JOptionPane.showMessageDialog(null, "El usuario ingresado no existe", "No se pudo iniciar sessión", JOptionPane.WARNING_MESSAGE);
         } catch (OperationException | IOException | ClassNotFoundException ex){
@@ -55,7 +59,7 @@ public class Controller {
     public void logout(){
         try {
             ServiceProxy.getInstance().logout(model.getCurrentUser());
-            model.setMessages(new ArrayList<>());
+            //model.setMessages(new ArrayList<>());
             //model.commit(Model.CHAT);
         } catch (Exception ex) {
         }
@@ -63,13 +67,14 @@ public class Controller {
         //model.commit(Model.USER+Model.CHAT);
     }
     public void deliver(Message message){
-        model.getMessages().add(message);
+        model.getMessages().put(message.getRemitent(), message);
         updateMessages(model.getMessages());
     }
-    public void updateMessages(List<Message> messages) {
+    public void updateMessages(HashMap<String, Message> messages) {
+        //----------------------------Buscar el usuario seleccionado-----------------------------------------
         view.getMessages().setText("");
         String text = "";
-        for (Message m : messages) {
+        for (Message m : messages.values()) {
             if (m.getRemitent().equals(model.getCurrentUser())) {
                 text += ("Me:" + m.getMessage() + "\n");
             } else {

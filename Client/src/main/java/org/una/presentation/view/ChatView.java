@@ -2,30 +2,36 @@ package org.una.presentation.view;
 
 import org.una.application.Application;
 import org.una.presentation.controller.Controller;
-import org.una.presentation.model.User;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Vector;
 
-public class View extends JFrame {
+public class ChatView extends JFrame{
     private JPanel panel;
     private JPanel loginPanel;
-    private JPanel bodyPanel;
     private JTextField username;
     private JPasswordField clave;
     private JButton login;
     private JButton finish;
-    private JTextPane messages;
+    private JPanel bodyPanel;
     private JTextField mensaje;
     private JButton post;
-    private JButton logout;
+    private JTextPane messages;
+    private JPanel ContactsPanel;
+    private JButton logoutButton;
+    private JPanel ContactsPanelList;
+    private JList contactList;
+    private JTextField srchBar;
+    private JButton srchBtn;
     private Controller controller;
 
-    public View() {
-        setSize(500,400);
+    public ChatView() {
+        setSize(600,500);
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("CHAT");
         try {
@@ -62,7 +68,7 @@ public class View extends JFrame {
                 }
             }
         });
-        logout.addActionListener(new ActionListener() {
+        finish.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.logout();
@@ -85,11 +91,9 @@ public class View extends JFrame {
 
         setVisible(true);
     }
-
     public void setController(Controller controller) {
         this.controller = controller;
     }
-
     public JPanel getPanel() {
         return panel;
     }
@@ -114,11 +118,13 @@ public class View extends JFrame {
         return clave;
     }
     public void loginAccepted(String username) {
-
         setTitle(username.toUpperCase());
         getLoginPanel().setVisible(false);;
         getBodyPanel().setVisible(true);
         getRootPane().setDefaultButton(post);
         panel.validate();
+    }
+    public void setContactListValues(String[] contactList){
+        this.contactList.setListData(contactList);
     }
 }

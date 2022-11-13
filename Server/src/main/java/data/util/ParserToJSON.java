@@ -1,26 +1,40 @@
 package data.util;
 
+import data.dto.MessageDetails;
 import data.model.repository.Message;
 import data.model.repository.User;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
+import jakarta.json.bind.JsonbConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ParserToJSON {
     public static String UserToJson(User user){
         Jsonb jsonb = JsonbBuilder.create();
-        String userJSON = jsonb.toJson(user);
-        return userJSON;
+        return jsonb.toJson(user);
     }
     public static User JsonToUser(String jsonUser){
         Jsonb jsonb = JsonbBuilder.create();
-        User user = jsonb.fromJson(jsonUser, User.class);
-        return user;
+        return jsonb.fromJson(jsonUser, User.class);
     }
-    public static String PendingMessagesToJson(List<Message> pendingMessages) {
+    public static String PendingMessagesToJson(List<MessageDetails> pendingMessages) {
+        Jsonb jsonb = JsonbBuilder.create(new JsonbConfig().withFormatting(true));
+        return jsonb.toJson(pendingMessages);
+    }
+    public static Message JsonToMessage(String messageJson) {
         Jsonb jsonb = JsonbBuilder.create();
-        String jsonPendingMessages = jsonb.toJson(pendingMessages);
-        return jsonPendingMessages;
+        return jsonb.fromJson(messageJson, Message.class);
+    }
+    public static String MessageToJson(Message message) {
+        Jsonb jsonb = JsonbBuilder.create(new JsonbConfig().withFormatting(true));
+        return jsonb.toJson(message);
+    }
+    public static List<User> JsonToUsers(String userListJson) {
+        Jsonb jsonb = JsonbBuilder.create();
+        List<User> contactList = new ArrayList<>();
+        contactList = jsonb.fromJson(userListJson, new ArrayList<Message>(){}.getClass().getGenericSuperclass());
+        return contactList;
     }
 }

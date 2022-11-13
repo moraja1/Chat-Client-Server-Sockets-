@@ -48,7 +48,7 @@ public class User {
     public void setUsername(String username) {
         this.username = username;
     }
-    @JsonbProperty("password")
+    @JsonbTransient
     public String getPassword() {
         return password;
     }

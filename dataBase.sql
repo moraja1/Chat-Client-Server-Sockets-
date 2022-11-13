@@ -1,4 +1,4 @@
--- MySQL Workbench Forward Engineering
+message-- MySQL Workbench Forward Engineering
 
 SET
 @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
@@ -72,7 +72,6 @@ CREATE TABLE IF NOT EXISTS `chat`.`message`
     512
 ) DEFAULT NULL,
     `date_time` TIMESTAMP DEFAULT NULL,
-    `delivered` BOOLEAN DEFAULT FALSE,
     PRIMARY KEY
 (
     `id_message`
@@ -108,58 +107,6 @@ CREATE TABLE IF NOT EXISTS `chat`.`message`
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
     ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `chat`.`contact_list`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `chat`.`contact_list`
-(
-    `owner_user` BIGINT
-(
-    20
-) NOT NULL,
-    `member_user` BIGINT
-(
-    20
-) NOT NULL,
-    PRIMARY KEY
-(
-    `owner_user`,
-    `member_user`
-),
-    INDEX `fk_user_has_user_user2_idx`
-(
-    `member_user` ASC
-) VISIBLE,
-    INDEX `fk_user_has_user_user1_idx`
-(
-    `owner_user` ASC
-) VISIBLE,
-    CONSTRAINT `fk_user_has_user_user1`
-    FOREIGN KEY
-(
-    `owner_user`
-)
-    REFERENCES `chat`.`user`
-(
-    `id_user`
-)
-    ON DELETE NO ACTION
-    ON UPDATE CASCADE,
-    CONSTRAINT `fk_user_has_user_user2`
-    FOREIGN KEY
-(
-    `member_user`
-)
-    REFERENCES `chat`.`user`
-(
-    `id_user`
-)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-    ENGINE = InnoDB;
-
 
 -- -----------------------------------------------------
 -- Table `chat`.`group`
@@ -207,3 +154,19 @@ insert into user
 (username, password)
 values
 ("jaison", "admin");
+insert into user
+(username, password)
+values
+("daniel", "admin");
+insert into user
+(username, password)
+values
+("jose", "admin");
+insert into user
+(username, password)
+values
+("enrique", "admin");
+insert into user
+(username, password)
+values
+("arnoldo", "admin");

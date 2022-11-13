@@ -8,8 +8,6 @@ import data.model.Worker;
 import data.util.Exceptions.LoginException;
 import data.util.Exceptions.OperationException;
 import data.util.Exceptions.RegisterException;
-import data.util.IService;
-import data.util.ParserToJSON;
 import data.util.Protocol;
 import business.controller.ServerWindow;
 
@@ -25,7 +23,7 @@ import java.util.List;
 public class Server {
     private ServerSocket serverSocket;
     private List<Worker> workers;
-    private IService service;
+    private Service service;
     private boolean exit = false;
     public Server() throws Exception {
         try {
@@ -35,6 +33,7 @@ public class Server {
         }
         workers =  Collections.synchronizedList(new ArrayList<Worker>());
         service = new Service();
+        service.setServer(this);
         new ServerWindow(this);
     }
     
@@ -46,20 +45,15 @@ public class Server {
 
         while (!exit) {
             try {
+                //*******************************************************Opens Socket
                 socket = serverSocket.accept();
                 input = new ObjectInputStream(socket.getInputStream());
                 output = new ObjectOutputStream(socket.getOutputStream() );
                 System.out.println("Conexion Establecida...");
-                //Execute operation
-                User user = executeOperation(input, output);
-                //Create Worker
-                Worker worker = new Worker(this, input, output, user, service);
-                //Create Thread
-                Thread userThread = new Thread(worker);
-                worker.setThreadParent(userThread);
-                //Add worker to memory and start run method.
-                workers.add(worker);
-                userThread.start();
+
+                //********************************************************Execute operation
+                executeOperation(input, output);
+
             }catch (LoginException | RegisterException e) {
                 try {
                     if(output != null){
@@ -88,8 +82,7 @@ public class Server {
         }
         System.out.println("Servidor finalizado...");
     }
-    private User executeOperation(ObjectInputStream input, ObjectOutputStream output) throws LoginException, RegisterException, OperationException {
-        User user = null;
+    private void executeOperation(ObjectInputStream input, ObjectOutputStream output) throws LoginException, RegisterException, OperationException {
         int method;
         try {
             method = input.readInt();
@@ -99,12 +92,12 @@ public class Server {
         switch (method){
             case Protocol.LOGIN: //******************************LOGIN***********************
             {
-                user = login(input, output);
+                service.login(input, output);
                 break;
             }
             case Protocol.REGISTER: //******************************REGISTER***********************
             {
-                user = register(input, output);
+                service.register(input, output);
                 break;
             }
             default:
@@ -116,71 +109,32 @@ public class Server {
                 }
             }
         }
-        return user;
-    }
-    private User login(ObjectInputStream input, ObjectOutputStream output) throws LoginException {
-        String userJson = null;
-        User user;
-        try {
-            //Read user info
-            userJson = (String) input.readObject();
-            System.out.println(userJson);
-            user = ParserToJSON.JsonToUser(userJson);
-            if(user != null){
-                //Try to log in
-                user = service.login(user);
-                userJson = null;
-                userJson = ParserToJSON.UserToJson(user);
-                output.writeInt(Protocol.ERROR_NO_ERROR);
-                output.writeObject(userJson);
-                output.flush();
-
-                //Send Pending Messages
-                List<Message> pendingMessages = service.getPendingMessages(user);
-
-                String pendingMessagesJson = "";
-                if(!pendingMessages.isEmpty()) {
-
-                    pendingMessagesJson = ParserToJSON.PendingMessagesToJson(pendingMessages);
-                }
-                output.writeInt(Protocol.DELIVER_COLLECTION);
-                output.writeObject(pendingMessagesJson);
-                output.flush();
-            }
-        } catch (Exception e) {
-            throw new LoginException();
-        }
-        return user;
-    }
-    private User register(ObjectInputStream input, ObjectOutputStream output) throws RegisterException {
-        User user = null;
-        try {
-            user = (User) input.readObject();
-            if(user != null){
-                user = service.register(user);
-                output.writeInt(Protocol.ERROR_NO_ERROR);
-                output.writeObject(user);
-                output.flush();
-            }
-        } catch (Exception e) {
-            throw new RegisterException();
-        }
-        return user;
     }
     public void deliver(Message message){
-        for(Worker wk:workers){
-            wk.deliver(message);
-        }        
-    } 
-    
-    public void remove(User u){
+        String destinatary = message.getDestinatary().getUsername();
+
+        for(Worker w : workers){
+            if(w.getUser().getUsername().equals(destinatary)){
+                w.deliver(message);
+            }
+        }
+    }
+    public void removeWorker(User u, List<User> contactList){
         for(Worker wk : workers){
             if(wk.getUser().equals(u)){
                 workers.remove(wk);
-                break;
+            }
+            if(contactList.contains(wk.getUser())){
+                wk.sendLogoutMessage(u.getUsername());
             }
         }
         System.out.println("Quedan: " + workers.size());
+    }
+    public void createWorker(ObjectInputStream input, ObjectOutputStream output, User user){
+        //Create Worker
+        Worker worker = new Worker(this, input, output, user, service);
+        //Add worker to memory and start run method.
+        workers.add(worker);
     }
     public void close(){
         //Creo un nuevo hilo para cerrar el ServerSocket

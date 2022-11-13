@@ -1,78 +1,147 @@
 package data.model;
 
+import business.Service;
+import data.dto.MessageDetails;
 import data.model.repository.Message;
 import data.model.repository.User;
-import data.util.IService;
+import data.util.ParserToJSON;
 import data.util.Protocol;
 import data.Server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Worker implements Runnable{
-    private Server srv;
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
-    private IService service;
+    private Server server;
+    private ObjectInputStream input;
+    private ObjectOutputStream output;
+    private Service service;
     private User user;
+    private Worker partner;
     boolean continuar = true;
     private Thread threadParent;
-    public Worker(Server srv, ObjectInputStream in, ObjectOutputStream out, User user, IService service) {
-        this.srv=srv;
-        this.in=in;
-        this.out=out;
+    public Worker(Server server, ObjectInputStream input, ObjectOutputStream output, User user, Service service) {
+        this.server = server;
+        this.input = input;
+        this.output = output;
         this.user=user;
         this.service=service;
+        threadParent = new Thread(this, user.getUsername());
+        threadParent.start();
     }
 
     @Override
     public void run() {
+        sendPendingMessages();
         listen();
     }
-    public void deliver(Message message){
-        try {
-            out.writeInt(Protocol.DELIVER);
-            out.writeObject(message);
-            out.flush();
-        } catch (IOException ex) {
+
+    private void sendPendingMessages() {
+        //Send Pending Messages
+        List<Message> pendingMessages = service.getPendingMessages(user);
+        List<MessageDetails> pendingMessagesToSend = new ArrayList<>();
+        String pendingMessagesJson = "";
+
+        if(!pendingMessages.isEmpty()) {
+            for(Message m : pendingMessages){
+                pendingMessagesToSend.add(new MessageDetails(m));
+            }
+            pendingMessagesJson = ParserToJSON.PendingMessagesToJson(pendingMessagesToSend);
         }
+        try {
+            output.writeInt(Protocol.DELIVER_COLLECTION);
+            output.writeObject(pendingMessagesJson);
+            output.flush();
+            waitForResponse();
+            for(Message m : pendingMessages){
+                service.messageDelivered(m);
+            }
+        }catch (Exception e){}
     }
     public void listen(){
         int method;
 
         while (continuar) {
             try {
-                method = in.readInt();
+                method = input.readInt();
                 System.out.println("Operacion: "+ method);
                 switch(method){
-                    //case Protocol.LOGIN: done on accept
                     case Protocol.LOGOUT:
                         try {
-                            srv.remove(user);
-                            service.logout(user); //Remove user from loggedin Users
+                            String userListJson = (String) input.readObject();
+                            List<User> contactList = ParserToJSON.JsonToUsers(userListJson);
+                            contactList = service.getPersistedUsers(contactList);
+                            service.logout(user, contactList); //Remove user from loggedin Users
                         } catch (Exception ex) {}
                         stop();
                         break;
                     case Protocol.POST:
-                        Message message=null;
+                        String messageJson=null;
                         try {
-                            message = (Message)in.readObject();
-                            message.setRemitent(user);
-                            srv.deliver(message);
-                            //service.post(message); // if wants to save messages, ex. recivier no logged on
-                            System.out.println(user.getUsername()+": "+message.getMessage());
+                            messageJson = (String) input.readObject();
+                            Message message = ParserToJSON.JsonToMessage(messageJson);
+                            server.deliver(message);
+                            System.out.println(user.getUsername()+": " + message.getMessage());
                         } catch (ClassNotFoundException ex) {}
                         break;
                     default:
                         break;
                 }
-                out.flush();
+                output.flush();
             } catch (IOException  ex) {
                 System.out.println(ex);
                 continuar = false;
             }                        
         }
+    }
+
+    public void deliver(Message message){
+        try {
+            String messageJson = ParserToJSON.MessageToJson(message);
+            output.writeInt(Protocol.DELIVER);
+            output.writeObject(messageJson);
+            output.flush();
+            waitForResponse();
+        } catch (Exception ex) {
+            service.messageUndelivered(message);
+        }
+    }
+    private void waitForResponse() throws RuntimeException{
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean confirmed = false;
+                long startTime = System.currentTimeMillis();
+                long currentTime = startTime;
+                while(currentTime < startTime+10000){
+                    currentTime = System.currentTimeMillis();
+
+                    try {
+                        int response = input.readInt();
+                        if (response != Protocol.ERROR_NO_ERROR) {
+                            throw new RuntimeException();
+                        }else{
+                            confirmed = true;
+                        }
+                    }catch (Exception e){
+                        throw new RuntimeException(e);
+                    }
+                }
+                if(!confirmed){
+                    throw new RuntimeException();
+                }
+            }
+        }).start();
+    }
+    public void sendLogoutMessage(String username){
+        try {
+            output.writeInt(Protocol.LOGOUT);
+            output.writeObject(username);
+            output.flush();
+        } catch (Exception ex) {}
     }
     public void stop(){
         continuar=false;
@@ -82,8 +151,7 @@ public class Worker implements Runnable{
         return user;
     }
 
-    public void setThreadParent(Thread threadParent) {
-        this.threadParent = threadParent;
-        this.threadParent.setName(user.getUsername());
+    public void setPartner(Worker partner) {
+        this.partner = partner;
     }
 }

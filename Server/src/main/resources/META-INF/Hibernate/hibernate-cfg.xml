@@ -10,7 +10,6 @@
         <property name="hibernate.connection.username">jaison</property>
         <property name="hibernate.connection.password">admin</property>
         <property name="show_sql">true</property>
-        <mapping class="data.model.repository.ContactList"/>
         <mapping class="data.model.repository.Group"/>
         <mapping class="data.model.repository.Message"/>
         <mapping class="data.model.repository.User"/>

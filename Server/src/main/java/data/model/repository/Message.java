@@ -16,7 +16,6 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id_message")
-    @JsonbTransient
     private Long idMessage;
     @Basic
     @Column(name = "message")
@@ -30,35 +29,26 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "destinatary", referencedColumnName = "id_user", nullable = false)
     private User destinatary;
-    @Column(name = "delivered")
-    private Boolean delivered;
-    public Boolean isDelivered() {
-        return delivered;
-    }
-    public void setDelivered(Boolean delivered) {
-        this.delivered = delivered;
-    }
-    @JsonbProperty("")
+
     public Long getIdMessage() {
         return idMessage;
     }
     public void setIdMessage(Long idMessage) {
         this.idMessage = idMessage;
     }
-    @JsonbProperty("message")
+
     public String getMessage() {
         return message;
     }
-    @JsonbProperty("message")
+
     public void setMessage(String message) {
         this.message = message;
     }
-    @JsonbProperty("dateTime")
-    @JsonbNumberFormat("#")
+
     public Timestamp getDateTime() {
         return dateTime;
     }
-    @JsonbProperty("dateTime")
+
     public void setDateTime(Timestamp dateTime) {
         this.dateTime = dateTime;
     }

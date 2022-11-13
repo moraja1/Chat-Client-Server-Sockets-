@@ -1,8 +1,5 @@
 package org.una.logic;
 
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
-import jakarta.json.bind.Jsonb;
 import org.una.Exceptions.LoginException;
 import org.una.Exceptions.OperationException;
 import org.una.logic.dto.ParserToJSON;
@@ -13,7 +10,6 @@ import org.una.presentation.model.User;
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ServiceProxy implements IService{
@@ -37,9 +33,7 @@ public class ServiceProxy implements IService{
 
     @Override
     public User login(User u) throws LoginException, OperationException, IOException, ClassNotFoundException {
-        if(socket == null){
-            connect();
-        }
+        connect();
         String userJson = ParserToJSON.UserToJson(u);
         try {
             output.writeInt(Protocol.LOGIN);
@@ -54,7 +48,6 @@ public class ServiceProxy implements IService{
             } else if (response == Protocol.ERROR_LOGIN) {
                 throw new LoginException();
             } else {
-                disconnect();
                 throw new OperationException();
             }
         } catch (IOException ex) {
@@ -71,9 +64,7 @@ public class ServiceProxy implements IService{
     }
     @Override
     public void register(User u) throws Exception {
-        if(socket == null){
-            connect();
-        }
+        connect();
     }
     @Override
     public void post(Message message){
@@ -124,18 +115,18 @@ public class ServiceProxy implements IService{
                 System.out.println("DELIVERY");
                 System.out.println("Operacion: " + method);
                 switch(method){
-                case Protocol.DELIVER: {
+                case Protocol.RECEIVE: {
                     try {
                         String messageJson = (String) input.readObject();
                         if(!messageJson.isEmpty()){
                             Message message = ParserToJSON.JsonToMessage(messageJson);
                             deliver(message);
                         }
-                    } catch (ClassNotFoundException ex) {
-                    }
+                    } catch (ClassNotFoundException ex) {}
+                    output.writeInt(Protocol.ERROR_OPERATON);
                     break;
                 }
-                case Protocol.DELIVER_COLLECTION: {
+                case Protocol.RECEIVE_COLLECTION: {
                     try {
                         String messagesJson = (String) input.readObject();
                         if(!messagesJson.isEmpty()){
@@ -144,19 +135,19 @@ public class ServiceProxy implements IService{
                                 deliver(message);
                             }
                         }
-                    } catch (ClassNotFoundException ex) {
-                    }
+                    } catch (ClassNotFoundException ex) {}
+                    output.writeInt(Protocol.ERROR_OPERATON);
+                    output.flush();
                     break;
                 }
                 }
                 output.flush();
-            } catch (IOException  ex) {
-                continuar = false;
-            }                        
+            } catch (IOException  ex) {}
         }
     }
-   private void deliver( final Message message ){
-      SwingUtilities.invokeLater(new Runnable(){
+   private void deliver( final Message message ) throws IOException {
+        output.writeInt(Protocol.ERROR_NO_ERROR);
+        SwingUtilities.invokeLater(new Runnable(){
             public void run(){
                controller.deliver(message);
             }

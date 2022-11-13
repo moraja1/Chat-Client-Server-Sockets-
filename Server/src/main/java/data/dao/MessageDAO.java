@@ -22,7 +22,6 @@ public class MessageDAO extends DAO<Message> {
 
     public List<Message> getPendingMessages(User destinatary) {
         List<Message> messagesByUSer = new ArrayList<>();
-        List<Message> pendingMessages = new ArrayList<>();
         Transaction transaction = null;
         Session session;
         try {
@@ -39,13 +38,6 @@ public class MessageDAO extends DAO<Message> {
             }
             ex.printStackTrace();
         }
-        if(!messagesByUSer.isEmpty()){
-            for(Message m : messagesByUSer){
-                if(!m.isDelivered()){
-                    pendingMessages.add(m);
-                }
-            }
-        }
-        return pendingMessages;
+        return messagesByUSer;
     }
 }
