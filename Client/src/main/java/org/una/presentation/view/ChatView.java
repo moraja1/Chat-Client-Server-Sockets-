@@ -6,8 +6,7 @@ import org.una.presentation.controller.Controller;
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.List;
 import java.util.Vector;
 
@@ -88,7 +87,14 @@ public class ChatView extends JFrame{
                 mensaje.setText("");
             }
         });
-
+        contactList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() == 2){
+                    controller.partnerSelected((String)contactList.getSelectedValue());
+                }
+            }
+        });
         setVisible(true);
     }
     public void setController(Controller controller) {
@@ -126,5 +132,7 @@ public class ChatView extends JFrame{
     }
     public void setContactListValues(String[] contactList){
         this.contactList.setListData(contactList);
+        this.contactList.setSelectedIndex(0);
+        this.contactList.dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_CLICKED, 1, MouseEvent.BUTTON1, 0, 0, 2, false));
     }
 }

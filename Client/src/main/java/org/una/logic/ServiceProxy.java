@@ -68,15 +68,13 @@ public class ServiceProxy implements IService{
     }
     @Override
     public void post(Message message){
-        /*try {
+        String messageJson = ParserToJSON.MessageToJson(message);
+        try {
             output.writeInt(Protocol.POST);
-            output.writeObject(message);
+            output.writeObject(messageJson);
             output.flush();
-        } catch (IOException ex) {
-
-        }   */
+        } catch (IOException ex) {}
     }
-
     //-----------------------------------------------------------------------------------------------------------------
 
     //OPERATIONAL FUNCTIONS
