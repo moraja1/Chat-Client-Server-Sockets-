@@ -28,7 +28,6 @@ public class Service {
         try {
             //Read user info
             userJson = (String) input.readObject();
-            System.out.println(userJson);
             user = ParserToJSON.JsonToUser(userJson);
             if(user != null){
                 //Try to log in
