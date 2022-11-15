@@ -6,17 +6,17 @@
 package org.una.presentation.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Model {
     private User currentUser;
     private User userSelected;
-    private HashMap<String, Message> messages;
+    private List<Message> messages;
+    private List<String> contactList;
     public Model() {
        currentUser = null;
-       messages= new LinkedHashMap<>();
+       messages = new ArrayList<>();
+       contactList = new ArrayList<>();
     }
     public User getCurrentUser() {
         return currentUser;
@@ -24,10 +24,10 @@ public class Model {
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
-    public HashMap<String, Message> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
-    public void setMessages(HashMap<String, Message> messages) {
+    public void setMessages(ArrayList<Message> messages) {
         this.messages = messages;
     }
     public User getUserSelected() {
@@ -35,5 +35,11 @@ public class Model {
     }
     public void setUserSelected(User userSelected) {
         this.userSelected = userSelected;
+    }
+    public List<String> getContactList() {
+        return contactList;
+    }
+    public void setContactList(List<String> contactList) {
+        this.contactList = contactList;
     }
 }

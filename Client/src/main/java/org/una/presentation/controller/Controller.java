@@ -43,7 +43,10 @@ public class Controller {
             model.setCurrentUser(logged);
             view.loginAccepted(logged.getUsername());
             List<String> contactsList = jsonFileAdmin.contactListFromJason(user.getUsername());
-            view.setContactListValues(contactsList.toArray(new String[contactsList.size()]));
+            if(!contactsList.isEmpty()){
+                view.setContactListValues(contactsList.toArray(new String[contactsList.size()]));
+                model.setContactList(contactsList);
+            }
         } catch (LoginException e) {
             JOptionPane.showMessageDialog(null, "El usuario ingresado no existe", "No se pudo iniciar sessión", JOptionPane.WARNING_MESSAGE);
         } catch (OperationException | IOException | ClassNotFoundException ex){
@@ -56,7 +59,7 @@ public class Controller {
         message.setRemitent(model.getCurrentUser().getUsername());
         message.setDestinatary(model.getUserSelected().getUsername());
         message.setDateTime(LocalDateTime.now());
-        model.getMessages().put(model.getUserSelected().getUsername(), message);
+        model.getMessages().add(message);
         localService.post(message);
         updateMessages();
         jsonFileAdmin.addNewMessage(model.getCurrentUser().getUsername(), model.getUserSelected().getUsername(), message);
@@ -72,23 +75,23 @@ public class Controller {
         //model.commit(Model.USER+Model.CHAT);
     }
     public void deliver(Message message){
-        model.getMessages().put(message.getRemitent(), message);
+        model.getMessages().add(message);
         updateMessages();
         jsonFileAdmin.addNewMessage(model.getCurrentUser().getUsername(), message.getRemitent(), message);
+        if(!model.getContactList().contains(message.getRemitent())){
+            model.getContactList().add(message.getRemitent());
+            view.setContactListValues(model.getContactList().toArray(new String[model.getContactList().size()]));
+        }
     }
     public void updateMessages() {
         //----------------------------Buscar el usuario seleccionado-----------------------------------------
         view.getMessages().setText("");
         String text = "";
-        HashMap<String, Message> messages = model.getMessages();
+        List<Message> messages = model.getMessages();
 
         //----------------------------ESCRIBO EN PANTALLA----------------------------
-        for (Message m : messages.values()) {
-            if (m.getRemitent().equals(model.getCurrentUser())) {
-                text += ("Me:" + m.getMessage() + "\n");
-            } else {
-                text += (m.getRemitent() + ": " + m.getMessage() + "\n");
-            }
+        for(Message m : messages){
+
         }
         view.getMessages().setText(text);
     }
@@ -101,7 +104,7 @@ public class Controller {
             messages.add(ParserToJSON.JsonToMessage(s));
         }
         for(Message m : messages){
-            model.getMessages().put(contactUsername, m);
+            model.getMessages().add(m);
         }
         updateMessages();
     }

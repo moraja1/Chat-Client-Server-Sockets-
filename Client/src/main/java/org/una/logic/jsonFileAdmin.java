@@ -92,23 +92,25 @@ public class jsonFileAdmin {
         JsonArray messages = getJsonConversationsWith(json, contactUsername);
         if(messages == null){
             createMessagesSpace(json, username, contactUsername);
+            json = getJsonObject(username);
             messages = getJsonConversationsWith(json, contactUsername);
         }
+        System.out.println(messages);
         //-------------------Create Json to be added----------------------------
-        JsonValue patch = Json.createObjectBuilder().add(contactUsername, Json.createArrayBuilder()
-                .add(Json.createObjectBuilder()
+        JsonValue patch = Json.createArrayBuilder(messages).add(Json.createObjectBuilder()
                         .add("message", message.getMessage())
                         .add("remitent", message.getRemitent())
                         .add("destinatary", message.getDestinatary())
-                        .add("dateTime", message.getDateTime().toString()).build()).build()).build();
+                        .add("dateTime", message.getDateTime().toString()).build()).build();
 
         //---------------------Merge it on Messages Json-----------------------
         JsonMergePatch jsonMergePatch = Json.createMergePatch(patch);
         JsonValue result = jsonMergePatch.apply(messages);
 
         //---------------------Merge it on Conversation Json------------------
-        JsonValue conversations = json.getJsonObject("conversations");
-        jsonMergePatch = Json.createMergePatch(result);
+        JsonObject conversations = json.getJsonObject("conversations");
+        patch = Json.createObjectBuilder().add(contactUsername, result).build();
+        jsonMergePatch = Json.createMergePatch(patch);
         result = jsonMergePatch.apply(conversations);
 
         //----------------------Merge it on File Json-----------------------

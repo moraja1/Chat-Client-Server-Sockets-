@@ -9,10 +9,14 @@
                 "message": "Hola Mundo",
                 "remitent": "jaison",
                 "destinatary": "daniel",
-                "dateTime": "2022-11-15T13:26:33.833275500"
+                "dateTime": "2022-11-15T14:45:39.549443300"
+            },
+            {
+                "message": "Hola Solamente",
+                "remitent": "jaison",
+                "destinatary": "daniel",
+                "dateTime": "2022-11-15T14:45:48.324874100"
             }
-        ],
-        "jose": [
         ]
     }
 }

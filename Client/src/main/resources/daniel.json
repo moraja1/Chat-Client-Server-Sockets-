@@ -1,2 +1,14 @@
-{"contacts":[],
-  "conversations":{}}
+{
+    "contacts": [
+    ],
+    "conversations": {
+        "jaison": [
+            {
+                "message": "Hola Playo",
+                "remitent": "jaison",
+                "destinatary": "daniel",
+                "dateTime": "2022-11-15T14:30:16"
+            }
+        ]
+    }
+}
