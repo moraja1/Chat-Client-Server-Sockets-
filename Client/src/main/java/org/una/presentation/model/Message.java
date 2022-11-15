@@ -3,12 +3,13 @@ package org.una.presentation.model;
 import jakarta.json.bind.annotation.JsonbProperty;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Message {
     private String message;
     private String remitent;
     private String destinatary;
-    private LocalDate dateTime;
+    private LocalDateTime dateTime;
 
     public Message() {
     }
@@ -21,11 +22,11 @@ public class Message {
         this.message = message;
     }
     @JsonbProperty("dateTime")
-    public LocalDate getDateTime() {
+    public LocalDateTime getDateTime() {
         return dateTime;
     }
     @JsonbProperty("dateTime")
-    public void setDateTime(LocalDate dateTime) {
+    public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
     @JsonbProperty("remitent")

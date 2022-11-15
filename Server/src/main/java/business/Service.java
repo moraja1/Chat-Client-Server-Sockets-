@@ -98,7 +98,7 @@ public class Service {
         User remitent = userDAO.getSingleObject(message.getRemitent());
         User destinatary = userDAO.getSingleObject(message.getDestinatary());
         dao = new MessageDAO();
-        dao.add(new Message(message.getMessage(), Timestamp.valueOf(message.getDateTime().atStartOfDay()), remitent, destinatary));
+        dao.add(new Message(message.getMessage(), Timestamp.valueOf(message.getDateTime()), remitent, destinatary));
     }
     public List<User> getPersistedUsers(List<User> contactList) {
         List<User> persistedUsers = new ArrayList<>();

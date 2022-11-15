@@ -13,7 +13,9 @@ import java.util.Set;
         @NamedQuery(name = "User.findByUsernameAndPassword", query = "select u from User u where u.username = :username and u.password = :password"),
         @NamedQuery(name = "User.existsByUsernameAndPassword", query = "select (count(u) > 0) from User u where u.username = :username and u.password = :password"),
         @NamedQuery(name = "User.findByIdUser", query = "select u from User u where u.idUser = :idUser"),
-        @NamedQuery(name = "User.findByUsername", query = "select u from User u where u.username = :username")
+        @NamedQuery(name = "User.findByUsername", query = "select u from User u where u.username = :username"),
+        @NamedQuery(name = "User.findByUsernameLike", query = "select u from User u where upper(u.username) like upper(:username)"),
+        @NamedQuery(name = "User.findByContainsUsernameLike", query = "select u from User u where upper(u.username) like upper(concat('%', :username1, '%')) and upper(u.username) like upper(:username2)")
 })
 public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

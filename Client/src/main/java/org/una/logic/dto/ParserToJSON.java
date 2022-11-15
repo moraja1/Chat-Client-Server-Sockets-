@@ -28,8 +28,11 @@ public class ParserToJSON {
 
     public static List<Message> JsonToMessageList(String messagesJson) {
         Jsonb jsonb = JsonbBuilder.create();
-        List<Message> messageList = new ArrayList<>();
+        List<Message> messageList;
         messageList = jsonb.fromJson(messagesJson, new ArrayList<Message>(){}.getClass().getGenericSuperclass());
+        if(messageList == null){
+            messageList = new ArrayList<>();
+        }
         return messageList;
     }
 }

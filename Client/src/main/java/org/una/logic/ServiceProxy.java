@@ -28,9 +28,6 @@ public class ServiceProxy implements IService{
         }
         return theInstance;
     }
-
-    //OVERRIDEN FUNCTIONS
-
     @Override
     public User login(User u) throws LoginException, OperationException, IOException, ClassNotFoundException {
         connect();
@@ -74,6 +71,14 @@ public class ServiceProxy implements IService{
             output.writeObject(messageJson);
             output.flush();
         } catch (IOException ex) {}
+    }
+    private void deliver( final Message message ) throws IOException {
+        SwingUtilities.invokeLater(new Runnable(){
+               public void run(){
+                   controller.deliver(message);
+               }
+           }
+        );
     }
     //-----------------------------------------------------------------------------------------------------------------
 
@@ -122,6 +127,7 @@ public class ServiceProxy implements IService{
                         }
                     } catch (ClassNotFoundException ex) {}
                     output.writeInt(Protocol.ERROR_OPERATON);
+                    output.flush();
                     break;
                 }
                 case Protocol.RECEIVE_COLLECTION: {
@@ -143,15 +149,6 @@ public class ServiceProxy implements IService{
             } catch (IOException  ex) {}
         }
     }
-   private void deliver( final Message message ) throws IOException {
-        output.writeInt(Protocol.ERROR_NO_ERROR);
-        SwingUtilities.invokeLater(new Runnable(){
-            public void run(){
-               controller.deliver(message);
-            }
-         }
-      );
-   }
    //------------------------------------------------------------------------------------------------------------------
 
    //MEMBER FUNCTIONS

@@ -1,17 +1,22 @@
 package org.una.logic;
 
 import jakarta.json.*;
+import jakarta.json.stream.JsonGenerator;
 import org.una.presentation.model.Message;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class jsonFileAdmin {
     private static final String PATH = "src/main/resources/";
     private static JsonObjectBuilder jsonBuilder = Json.createObjectBuilder();
     private static File jsonFile;
+    private static Map<String, Object> properties = new HashMap<>(1);
+
     private static void loadFile(String username) {
         String fullPath = new StringBuilder().append(PATH).append(username).append(".json").toString();
         jsonFile = new File(fullPath);
@@ -47,9 +52,12 @@ public class jsonFileAdmin {
         if(messagesJson == null){
             createMessagesSpace(json, username, contactUsername);
         }else{
-            for(JsonString message : messagesJson.getValuesAs(JsonString.class)){
-                messages.add(message.getString());
+            for(JsonObject jv : messagesJson.getValuesAs(JsonObject.class)){
+                messages.add(jv.toString());
             }
+        }
+        for(String s : messages){
+            System.out.println(s);
         }
         return messages;
     }
@@ -68,16 +76,16 @@ public class jsonFileAdmin {
 
     private static void saveOnFile(String username, JsonValue result) {
         loadFile(username);
+        properties.put(JsonGenerator.PRETTY_PRINTING, true);
         try{
             OutputStream outStream = Files.newOutputStream(jsonFile.toPath());
-            JsonWriter jsonWriter = Json.createWriter(outStream);
+            JsonWriterFactory jsonWriterFactory = Json.createWriterFactory(properties);
+            JsonWriter jsonWriter = jsonWriterFactory.createWriter(outStream);
             jsonWriter.writeObject(result.asJsonObject());
             jsonWriter.close();
         }catch (Exception e){}
     }
-    public static void addNewMessage(Message message) {
-        String username = message.getRemitent();
-        String contactUsername = message.getDestinatary();
+    public static void addNewMessage(String username, String contactUsername, Message message) {
         JsonObject json = getJsonObject(username);
 
         //-------------------Obtaining Json Messages-----------------------

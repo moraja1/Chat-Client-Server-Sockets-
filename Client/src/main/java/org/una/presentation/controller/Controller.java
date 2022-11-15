@@ -12,7 +12,7 @@ import org.una.presentation.model.User;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,11 +55,11 @@ public class Controller {
         message.setMessage(text);
         message.setRemitent(model.getCurrentUser().getUsername());
         message.setDestinatary(model.getUserSelected().getUsername());
-        message.setDateTime(LocalDate.now());
+        message.setDateTime(LocalDateTime.now());
         model.getMessages().put(model.getUserSelected().getUsername(), message);
         localService.post(message);
         updateMessages();
-        jsonFileAdmin.addNewMessage(message);
+        jsonFileAdmin.addNewMessage(model.getCurrentUser().getUsername(), model.getUserSelected().getUsername(), message);
     }
     public void logout(){
         try {
@@ -74,6 +74,7 @@ public class Controller {
     public void deliver(Message message){
         model.getMessages().put(message.getRemitent(), message);
         updateMessages();
+        jsonFileAdmin.addNewMessage(model.getCurrentUser().getUsername(), message.getRemitent(), message);
     }
     public void updateMessages() {
         //----------------------------Buscar el usuario seleccionado-----------------------------------------
