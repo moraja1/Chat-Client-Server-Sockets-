@@ -74,10 +74,8 @@ public class Server {
                 if(output != null){
                     try {
                         output.flush();
-                        socket.close();
                     } catch (IOException e) {}
                 }
-                System.out.println("Conexion cerrada...");
             }
         }
         System.out.println("Servidor finalizado...");

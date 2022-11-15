@@ -20,7 +20,6 @@ public class Worker implements Runnable{
     private ObjectOutputStream output;
     private Service service;
     private User user;
-    private Worker partner;
     boolean continuar = true;
     private Thread threadParent;
     public Worker(Server server, ObjectInputStream input, ObjectOutputStream output, User user, Service service) {
@@ -50,8 +49,7 @@ public class Worker implements Runnable{
                 pendingMessagesToSend.add(new MessageDetails(m));
             }
             pendingMessagesJson = ParserToJSON.PendingMessagesToJson(pendingMessagesToSend);
-        }
-        try {
+        }try {
             output.writeInt(Protocol.DELIVER_COLLECTION);
             output.writeObject(pendingMessagesJson);
             output.flush();
@@ -60,6 +58,7 @@ public class Worker implements Runnable{
                 service.messageDelivered(m);
             }
         }catch (Exception e){}
+
     }
     public void listen(){
         int method;
@@ -84,7 +83,7 @@ public class Worker implements Runnable{
                             messageJson = (String) input.readObject();
                             Message message = ParserToJSON.JsonToMessage(messageJson);
                             server.deliver(message);
-                            System.out.println(user.getUsername()+": " + message.getMessage());
+                            System.out.println(user.getUsername() +": " + message.getMessage());
                         } catch (ClassNotFoundException ex) {}
                         break;
                     default:
@@ -92,8 +91,7 @@ public class Worker implements Runnable{
                 }
                 output.flush();
             } catch (IOException  ex) {
-                System.out.println(ex);
-                continuar = false;
+                ex.printStackTrace();
             }                        
         }
     }
@@ -109,21 +107,19 @@ public class Worker implements Runnable{
             service.messageUndelivered(message);
         }
     }
-    private void waitForResponse() throws RuntimeException{
-        new Thread(new Runnable() {
+    private void waitForResponse() throws RuntimeException, InterruptedException {
+        Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 boolean confirmed = false;
                 long startTime = System.currentTimeMillis();
                 long currentTime = startTime;
-                while(currentTime < startTime+10000){
+                while(currentTime < startTime+10000 && !confirmed){
                     currentTime = System.currentTimeMillis();
 
                     try {
                         int response = input.readInt();
-                        if (response != Protocol.ERROR_NO_ERROR) {
-                            throw new RuntimeException();
-                        }else{
+                        if (response == Protocol.ERROR_NO_ERROR) {
                             confirmed = true;
                         }
                     }catch (Exception e){
@@ -134,7 +130,9 @@ public class Worker implements Runnable{
                     throw new RuntimeException();
                 }
             }
-        }).start();
+        });
+        t.start();
+        t.join();
     }
     public void sendLogoutMessage(String username){
         try {
@@ -149,9 +147,5 @@ public class Worker implements Runnable{
     }
     public User getUser() {
         return user;
-    }
-
-    public void setPartner(Worker partner) {
-        this.partner = partner;
     }
 }

@@ -134,7 +134,7 @@ public class ServiceProxy implements IService{
                             }
                         }
                     } catch (ClassNotFoundException ex) {}
-                    output.writeInt(Protocol.ERROR_OPERATON);
+                    output.writeInt(Protocol.ERROR_NO_ERROR);
                     output.flush();
                     break;
                 }
