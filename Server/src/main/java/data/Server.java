@@ -2,6 +2,7 @@
 package data;
 
 import business.Service;
+import data.dto.MessageDetails;
 import data.model.repository.Message;
 import data.model.repository.User;
 import data.model.Worker;
@@ -108,13 +109,17 @@ public class Server {
             }
         }
     }
-    public void deliver(Message message){
-        String destinatary = message.getDestinatary().getUsername();
-
+    public void deliver(MessageDetails message){
+        String destinatary = message.getDestinatary();
+        Boolean delivered = false;
         for(Worker w : workers){
             if(w.getUser().getUsername().equals(destinatary)){
                 w.deliver(message);
+                delivered = true;
             }
+        }
+        if(!delivered){
+            service.messageUndelivered(message);
         }
     }
     public void removeWorker(User u, List<User> contactList){

@@ -1,6 +1,7 @@
 package org.una.logic;
 
 import jakarta.json.*;
+import org.una.presentation.model.Message;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -41,16 +42,10 @@ public class jsonFileAdmin {
 
     public static List<String> getConversationWith(String username, String contactUsername) {
         JsonObject json = getJsonObject(username);
-        JsonObject conversations = json.getJsonObject("conversations");
-        JsonArray messagesJson = conversations.getJsonArray(contactUsername);
+        JsonArray messagesJson = getJsonConversationsWith(json, contactUsername);
         List<String> messages = new ArrayList<>();
         if(messagesJson == null){
-            //Creates a space for contact messages
-            JsonValue patch = Json.createObjectBuilder().add("conversations", Json.createObjectBuilder().add(contactUsername, Json.createArrayBuilder().build())).build();
-            JsonMergePatch jsonMergePatch = Json.createMergePatch(patch);
-            JsonValue result = jsonMergePatch.apply(json);
-            //Save it on memory
-            saveOnFile(username, result);
+            createMessagesSpace(json, username, contactUsername);
         }else{
             for(JsonString message : messagesJson.getValuesAs(JsonString.class)){
                 messages.add(message.getString());
@@ -79,5 +74,53 @@ public class jsonFileAdmin {
             jsonWriter.writeObject(result.asJsonObject());
             jsonWriter.close();
         }catch (Exception e){}
+    }
+    public static void addNewMessage(Message message) {
+        String username = message.getRemitent();
+        String contactUsername = message.getDestinatary();
+        JsonObject json = getJsonObject(username);
+
+        //-------------------Obtaining Json Messages-----------------------
+        JsonArray messages = getJsonConversationsWith(json, contactUsername);
+        if(messages == null){
+            createMessagesSpace(json, username, contactUsername);
+            messages = getJsonConversationsWith(json, contactUsername);
+        }
+        //-------------------Create Json to be added----------------------------
+        JsonValue patch = Json.createObjectBuilder().add(contactUsername, Json.createArrayBuilder()
+                .add(Json.createObjectBuilder()
+                        .add("message", message.getMessage())
+                        .add("remitent", message.getRemitent())
+                        .add("destinatary", message.getDestinatary())
+                        .add("dateTime", message.getDateTime().toString()).build()).build()).build();
+
+        //---------------------Merge it on Messages Json-----------------------
+        JsonMergePatch jsonMergePatch = Json.createMergePatch(patch);
+        JsonValue result = jsonMergePatch.apply(messages);
+
+        //---------------------Merge it on Conversation Json------------------
+        JsonValue conversations = json.getJsonObject("conversations");
+        jsonMergePatch = Json.createMergePatch(result);
+        result = jsonMergePatch.apply(conversations);
+
+        //----------------------Merge it on File Json-----------------------
+        patch = Json.createObjectBuilder().add("conversations", result).build();
+        jsonMergePatch = Json.createMergePatch(patch);
+        result = jsonMergePatch.apply(json);
+
+        //-------------------------------Save-----------------------------------
+        saveOnFile(username, result);
+    }
+    private static JsonArray getJsonConversationsWith(JsonObject json, String contactUsername){
+        JsonObject conversations = json.getJsonObject("conversations");
+        return conversations.getJsonArray(contactUsername);
+    }
+    private static void createMessagesSpace(JsonObject json, String username, String contactUsername) {
+        //Creates a space for contact messages
+        JsonValue patch = Json.createObjectBuilder().add("conversations", Json.createObjectBuilder().add(contactUsername, Json.createArrayBuilder().build())).build();
+        JsonMergePatch jsonMergePatch = Json.createMergePatch(patch);
+        JsonValue result = jsonMergePatch.apply(json);
+        //Save it on memory
+        saveOnFile(username, result);
     }
 }

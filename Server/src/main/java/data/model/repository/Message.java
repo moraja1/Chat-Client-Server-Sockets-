@@ -30,6 +30,16 @@ public class Message {
     @JoinColumn(name = "destinatary", referencedColumnName = "id_user", nullable = false)
     private User destinatary;
 
+    public Message() {
+    }
+
+    public Message(String message, Timestamp dateTime, User remitent, User destinatary) {
+        this.message = message;
+        this.dateTime = dateTime;
+        this.remitent = remitent;
+        this.destinatary = destinatary;
+    }
+
     public Long getIdMessage() {
         return idMessage;
     }

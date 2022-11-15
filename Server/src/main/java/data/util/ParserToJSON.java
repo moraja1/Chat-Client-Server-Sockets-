@@ -1,5 +1,6 @@
 package data.util;
 
+import data.dao.UserDAO;
 import data.dto.MessageDetails;
 import data.model.repository.Message;
 import data.model.repository.User;
@@ -7,6 +8,7 @@ import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.JsonbConfig;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,12 +25,11 @@ public class ParserToJSON {
         Jsonb jsonb = JsonbBuilder.create(new JsonbConfig().withFormatting(true));
         return jsonb.toJson(pendingMessages);
     }
-    public static Message JsonToMessage(String messageJson) {
+    public static MessageDetails JsonToMessage(String messageJson) {
         Jsonb jsonb = JsonbBuilder.create();
-        MessageDetails messageDetails = jsonb.fromJson(messageJson, MessageDetails.class);
-
+        return jsonb.fromJson(messageJson, MessageDetails.class);
     }
-    public static String MessageToJson(Message message) {
+    public static String MessageToJson(MessageDetails message) {
         Jsonb jsonb = JsonbBuilder.create(new JsonbConfig().withFormatting(true));
         return jsonb.toJson(message);
     }

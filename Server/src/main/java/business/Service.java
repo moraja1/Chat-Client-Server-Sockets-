@@ -2,6 +2,7 @@ package business;
 
 import data.Server;
 import data.dao.MessageDAO;
+import data.dto.MessageDetails;
 import data.util.Exceptions.LoginException;
 import data.util.Exceptions.RegisterException;
 import data.dao.DAO;
@@ -13,6 +14,7 @@ import data.util.Protocol;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,9 +93,12 @@ public class Service {
         dao = new MessageDAO();
         dao.erase(message);
     }
-    public void messageUndelivered(Message message) {
+    public void messageUndelivered(MessageDetails message) {
+        UserDAO userDAO = new UserDAO();
+        User remitent = userDAO.getSingleObject(message.getRemitent());
+        User destinatary = userDAO.getSingleObject(message.getDestinatary());
         dao = new MessageDAO();
-        dao.add(message);
+        dao.add(new Message(message.getMessage(), Timestamp.valueOf(message.getDateTime().atStartOfDay()), remitent, destinatary));
     }
     public List<User> getPersistedUsers(List<User> contactList) {
         List<User> persistedUsers = new ArrayList<>();

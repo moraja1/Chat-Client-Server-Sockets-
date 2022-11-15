@@ -49,16 +49,16 @@ public class Worker implements Runnable{
                 pendingMessagesToSend.add(new MessageDetails(m));
             }
             pendingMessagesJson = ParserToJSON.PendingMessagesToJson(pendingMessagesToSend);
-        }try {
-            output.writeInt(Protocol.DELIVER_COLLECTION);
-            output.writeObject(pendingMessagesJson);
-            output.flush();
-            waitForResponse();
-            for(Message m : pendingMessages){
-                service.messageDelivered(m);
-            }
-        }catch (Exception e){}
-
+            try {
+                output.writeInt(Protocol.DELIVER_COLLECTION);
+                output.writeObject(pendingMessagesJson);
+                output.flush();
+                waitForResponse();
+                for(Message m : pendingMessages){
+                    service.messageDelivered(m);
+                }
+            }catch (Exception e){}
+        }
     }
     public void listen(){
         int method;
@@ -81,7 +81,7 @@ public class Worker implements Runnable{
                         String messageJson=null;
                         try {
                             messageJson = (String) input.readObject();
-                            Message message = ParserToJSON.JsonToMessage(messageJson);
+                            MessageDetails message = ParserToJSON.JsonToMessage(messageJson);
                             server.deliver(message);
                             System.out.println(user.getUsername() +": " + message.getMessage());
                         } catch (ClassNotFoundException ex) {}
@@ -91,12 +91,12 @@ public class Worker implements Runnable{
                 }
                 output.flush();
             } catch (IOException  ex) {
-                ex.printStackTrace();
+                continuar = false;
             }                        
         }
     }
 
-    public void deliver(Message message){
+    public void deliver(MessageDetails message){
         try {
             String messageJson = ParserToJSON.MessageToJson(message);
             output.writeInt(Protocol.DELIVER);

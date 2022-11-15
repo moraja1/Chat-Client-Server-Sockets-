@@ -12,6 +12,7 @@ import org.una.presentation.model.User;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,8 +55,11 @@ public class Controller {
         message.setMessage(text);
         message.setRemitent(model.getCurrentUser().getUsername());
         message.setDestinatary(model.getUserSelected().getUsername());
+        message.setDateTime(LocalDate.now());
         model.getMessages().put(model.getUserSelected().getUsername(), message);
         localService.post(message);
+        updateMessages();
+        jsonFileAdmin.addNewMessage(message);
     }
     public void logout(){
         try {
@@ -76,6 +80,8 @@ public class Controller {
         view.getMessages().setText("");
         String text = "";
         HashMap<String, Message> messages = model.getMessages();
+
+        //----------------------------ESCRIBO EN PANTALLA----------------------------
         for (Message m : messages.values()) {
             if (m.getRemitent().equals(model.getCurrentUser())) {
                 text += ("Me:" + m.getMessage() + "\n");
