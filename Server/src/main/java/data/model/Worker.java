@@ -75,7 +75,9 @@ public class Worker implements Runnable{
                             List<User> contactList = ParserToJSON.JsonToUsers(userListJson);
                             contactList = service.getPersistedUsers(contactList);
                             service.logout(user, contactList); //Remove user from loggedin Users
-                        } catch (Exception ex) {}
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                         stop();
                         break;
                     case Protocol.POST:
@@ -85,7 +87,9 @@ public class Worker implements Runnable{
                             MessageDetails message = ParserToJSON.JsonToMessage(messageJson);
                             server.deliver(message);
                             System.out.println(user.getUsername() +": " + message.getMessage());
-                        } catch (ClassNotFoundException ex) {}
+                        } catch (ClassNotFoundException ex) {
+                            ex.printStackTrace();
+                        }
                         break;
                     default:
                         break;
@@ -93,6 +97,7 @@ public class Worker implements Runnable{
                 output.flush();
             } catch (IOException  ex) {
                 continuar = false;
+                ex.printStackTrace();
             }                        
         }
     }
