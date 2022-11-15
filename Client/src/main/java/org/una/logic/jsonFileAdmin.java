@@ -95,7 +95,6 @@ public class jsonFileAdmin {
             json = getJsonObject(username);
             messages = getJsonConversationsWith(json, contactUsername);
         }
-        System.out.println(messages);
         //-------------------Create Json to be added----------------------------
         JsonValue patch = Json.createArrayBuilder(messages).add(Json.createObjectBuilder()
                         .add("message", message.getMessage())
