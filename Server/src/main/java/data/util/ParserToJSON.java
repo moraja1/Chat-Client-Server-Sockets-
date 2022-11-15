@@ -25,7 +25,8 @@ public class ParserToJSON {
     }
     public static Message JsonToMessage(String messageJson) {
         Jsonb jsonb = JsonbBuilder.create();
-        return jsonb.fromJson(messageJson, Message.class);
+        MessageDetails messageDetails = jsonb.fromJson(messageJson, MessageDetails.class);
+
     }
     public static String MessageToJson(Message message) {
         Jsonb jsonb = JsonbBuilder.create(new JsonbConfig().withFormatting(true));
