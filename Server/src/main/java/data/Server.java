@@ -125,6 +125,7 @@ public class Server {
     public void removeWorker(User u, List<User> contactList){
         for(Worker wk : workers){
             if(wk.getUser().equals(u)){
+                wk.stop();
                 workers.remove(wk);
             }
             if(contactList.contains(wk.getUser())){

@@ -13,6 +13,14 @@ public class Message {
 
     public Message() {
     }
+
+    public Message(String message, String remitent, String destinatary, LocalDateTime dateTime) {
+        this.message = message;
+        this.remitent = remitent;
+        this.destinatary = destinatary;
+        this.dateTime = dateTime;
+    }
+
     @JsonbProperty("message")
     public String getMessage() {
         return message;

@@ -1,13 +1,17 @@
 {
     "contacts": [
+        "jose",
+        "jaison"
     ],
     "conversations": {
+        "jose": [
+        ],
         "jaison": [
             {
-                "message": "Hola Playo",
+                "message": "Hola daniel",
                 "remitent": "jaison",
                 "destinatary": "daniel",
-                "dateTime": "2022-11-15T14:30:16"
+                "dateTime": "2022-11-15T16:14:04.768360500"
             }
         ]
     }

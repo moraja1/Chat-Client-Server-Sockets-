@@ -6,16 +6,42 @@
     "conversations": {
         "daniel": [
             {
-                "message": "Hola Mundo",
+                "message": "Hola daniel",
                 "remitent": "jaison",
                 "destinatary": "daniel",
-                "dateTime": "2022-11-15T14:45:39.549443300"
+                "dateTime": "2022-11-15T16:14:04.768360500"
             },
             {
-                "message": "Hola Solamente",
+                "message": "Todo Bien?",
                 "remitent": "jaison",
                 "destinatary": "daniel",
-                "dateTime": "2022-11-15T14:45:48.324874100"
+                "dateTime": "2022-11-15T16:14:59.094126200"
+            }
+        ],
+        "jose": [
+            {
+                "message": "Hola Jaison",
+                "remitent": "jose",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-15T16:19:10.544705700"
+            },
+            {
+                "message": "gg",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-15T16:21:27.667277700"
+            },
+            {
+                "message": "Todo bien?",
+                "remitent": "jose",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-15T16:20:32.537399300"
+            },
+            {
+                "message": "gg",
+                "remitent": "jose",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-15T16:21:18.510444600"
             }
         ]
     }

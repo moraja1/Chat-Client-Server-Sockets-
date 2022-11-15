@@ -66,11 +66,15 @@ public class ServiceProxy implements IService{
     @Override
     public void post(Message message){
         String messageJson = ParserToJSON.MessageToJson(message);
+        System.out.println("POST");
+        System.out.println("Operacion:" + Protocol.POST);
         try {
             output.writeInt(Protocol.POST);
             output.writeObject(messageJson);
             output.flush();
-        } catch (IOException ex) {}
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
     private void deliver( final Message message ) throws IOException {
         SwingUtilities.invokeLater(new Runnable(){
@@ -125,8 +129,12 @@ public class ServiceProxy implements IService{
                             Message message = ParserToJSON.JsonToMessage(messageJson);
                             deliver(message);
                         }
-                    } catch (ClassNotFoundException ex) {}
-                    output.writeInt(Protocol.ERROR_OPERATON);
+                    } catch (ClassNotFoundException ex) {
+                        output.writeInt(Protocol.ERROR_OPERATON);
+                        output.flush();
+                        break;
+                    }
+                    output.writeInt(Protocol.ERROR_NO_ERROR);
                     output.flush();
                     break;
                 }
@@ -139,14 +147,20 @@ public class ServiceProxy implements IService{
                                 deliver(message);
                             }
                         }
-                    } catch (ClassNotFoundException ex) {}
+                    } catch (ClassNotFoundException ex) {
+                        output.writeInt(Protocol.ERROR_OPERATON);
+                        output.flush();
+                        break;
+                    }
                     output.writeInt(Protocol.ERROR_NO_ERROR);
                     output.flush();
                     break;
                 }
                 }
                 output.flush();
-            } catch (IOException  ex) {}
+            } catch (IOException  ex) {
+                ex.printStackTrace();
+            }
         }
     }
    //------------------------------------------------------------------------------------------------------------------

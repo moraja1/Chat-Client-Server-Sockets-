@@ -145,6 +145,7 @@ public class Worker implements Runnable{
     public void stop(){
         continuar=false;
         System.out.println("Conexion cerrada...");
+        threadParent.interrupt();
     }
     public User getUser() {
         return user;

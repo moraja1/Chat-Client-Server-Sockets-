@@ -6,6 +6,7 @@ import org.una.presentation.model.Message;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,9 +56,6 @@ public class jsonFileAdmin {
             for(JsonObject jv : messagesJson.getValuesAs(JsonObject.class)){
                 messages.add(jv.toString());
             }
-        }
-        for(String s : messages){
-            System.out.println(s);
         }
         return messages;
     }
@@ -131,5 +129,32 @@ public class jsonFileAdmin {
         JsonValue result = jsonMergePatch.apply(json);
         //Save it on memory
         saveOnFile(username, result);
+    }
+    public static void addNewContact(String username, String remitent) {
+        JsonObject json = getJsonObject(username);
+        JsonArray contacts = json.getJsonArray("contacts");
+        //-------------------Create Json to be added----------------------------
+        JsonValue patch = Json.createObjectBuilder().add("contacts", Json.createArrayBuilder(contacts).add(remitent).build()).build();
+        JsonMergePatch jsonMergePatch = Json.createMergePatch(patch);
+        JsonValue result = jsonMergePatch.apply(json);
+        saveOnFile(username, result);
+    }
+    public static List<Message> getAllConversations(String username) {
+        JsonObject json = getJsonObject(username);
+        JsonObject conversations = json.getJsonObject("conversations");
+        List<Message> messages = new ArrayList<>();
+
+        if(conversations != null){
+            if(!conversations.isEmpty()){
+                for(JsonValue jo : conversations.values()){
+                    JsonObject v = jo.asJsonObject();
+                    messages.add(new Message(v.getString("message"),
+                            v.getString("remitent"),
+                            v.getString("destinatary"),
+                            LocalDateTime.parse(v.getString("dateTime"))));
+                }
+            }
+        }
+        return messages;
     }
 }

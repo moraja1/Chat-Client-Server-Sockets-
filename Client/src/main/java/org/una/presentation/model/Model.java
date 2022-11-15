@@ -27,7 +27,7 @@ public class Model {
     public List<Message> getMessages() {
         return messages;
     }
-    public void setMessages(ArrayList<Message> messages) {
+    public void setMessages(List<Message> messages) {
         this.messages = messages;
     }
     public User getUserSelected() {

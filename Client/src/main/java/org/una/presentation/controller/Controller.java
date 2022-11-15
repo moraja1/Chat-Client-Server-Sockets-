@@ -47,6 +47,10 @@ public class Controller {
                 view.setContactListValues(contactsList.toArray(new String[contactsList.size()]));
                 model.setContactList(contactsList);
             }
+            List<Message> messages = jsonFileAdmin.getAllConversations(logged.getUsername());
+            if(!messages.isEmpty()){
+                model.setMessages(messages);
+            }
         } catch (LoginException e) {
             JOptionPane.showMessageDialog(null, "El usuario ingresado no existe", "No se pudo iniciar sessión", JOptionPane.WARNING_MESSAGE);
         } catch (OperationException | IOException | ClassNotFoundException ex){
@@ -76,22 +80,30 @@ public class Controller {
     }
     public void deliver(Message message){
         model.getMessages().add(message);
-        updateMessages();
         jsonFileAdmin.addNewMessage(model.getCurrentUser().getUsername(), message.getRemitent(), message);
         if(!model.getContactList().contains(message.getRemitent())){
             model.getContactList().add(message.getRemitent());
             view.setContactListValues(model.getContactList().toArray(new String[model.getContactList().size()]));
+            jsonFileAdmin.addNewContact(model.getCurrentUser().getUsername(), message.getRemitent());
         }
+        updateMessages();
     }
     public void updateMessages() {
         //----------------------------Buscar el usuario seleccionado-----------------------------------------
+        String selectedUser = model.getUserSelected().getUsername();
+        String currentUser = model.getCurrentUser().getUsername();
+
         view.getMessages().setText("");
         String text = "";
         List<Message> messages = model.getMessages();
 
         //----------------------------ESCRIBO EN PANTALLA----------------------------
         for(Message m : messages){
-
+            if(selectedUser.equals(m.getRemitent()) && currentUser.equals(m.getDestinatary())){
+                text += selectedUser + ": " + m.getMessage() + "\n";
+            } else if (currentUser.equals(m.getRemitent()) && selectedUser.equals(m.getDestinatary())) {
+                text += currentUser + ": " + m.getMessage() + "\n";
+            }
         }
         view.getMessages().setText(text);
     }
@@ -103,6 +115,7 @@ public class Controller {
         for(String s : messagesByUser){
             messages.add(ParserToJSON.JsonToMessage(s));
         }
+        model.setMessages(new ArrayList<>());
         for(Message m : messages){
             model.getMessages().add(m);
         }

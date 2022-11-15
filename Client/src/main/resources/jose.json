@@ -1,1 +1,30 @@
-{"contacts":[],"conversations":{}}
+{
+    "contacts": [
+        "daniel",
+        "jaison"
+    ],
+    "conversations": {
+        "daniel": [
+        ],
+        "jaison": [
+            {
+                "message": "Hola Jaison",
+                "remitent": "jose",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-15T16:19:10.544705700"
+            },
+            {
+                "message": "Todo bien?",
+                "remitent": "jose",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-15T16:20:32.537399300"
+            },
+            {
+                "message": "gg",
+                "remitent": "jose",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-15T16:21:18.510444600"
+            }
+        ]
+    }
+}
