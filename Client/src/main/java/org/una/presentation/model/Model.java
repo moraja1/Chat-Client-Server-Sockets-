@@ -12,7 +12,7 @@ public class Model {
     private User currentUser;
     private User userSelected;
     private List<Message> messages;
-    private List<String> contactList;
+    private List<User> contactList;
     public Model() {
        currentUser = null;
        messages = new ArrayList<>();
@@ -36,10 +36,10 @@ public class Model {
     public void setUserSelected(User userSelected) {
         this.userSelected = userSelected;
     }
-    public List<String> getContactList() {
+    public List<User> getContactList() {
         return contactList;
     }
-    public void setContactList(List<String> contactList) {
+    public void setContactList(List<User> contactList) {
         this.contactList = contactList;
     }
 }

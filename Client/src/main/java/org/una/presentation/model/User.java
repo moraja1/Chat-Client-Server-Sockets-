@@ -7,6 +7,7 @@ public class User {
     private Long idUser;
     private String username;
     private String password;
+    private boolean connected;
     public User(){}
 
     public User(String username) {
@@ -46,5 +47,13 @@ public class User {
     @JsonbProperty("password")
     public void setPassword(String password) {
         this.password = password;
+    }
+    @JsonbProperty("connected")
+    public boolean isConected() {
+        return connected;
+    }
+    @JsonbProperty("connected")
+    public void setConected(boolean connected) {
+        this.connected = connected;
     }
 }

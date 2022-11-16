@@ -37,15 +37,25 @@ public class Controller {
     private void initWindow(User logged){
         model.setCurrentUser(logged);
         view.loginAccepted(logged.getUsername());
-        List<String> contactsList = jsonFileAdmin.contactListFromJason(logged.getUsername());
+        List<String> contactsUsernames = jsonFileAdmin.contactListFromJason(logged.getUsername());
+        List<User> contactsList = new ArrayList<>();
+        for(String s : contactsUsernames){
+            contactsList.add(new User(s));
+        }
         if(!contactsList.isEmpty()){
             view.setContactListValues(contactsList.toArray(new String[contactsList.size()]));
             model.setContactList(contactsList);
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    localService.askContactState(contactsList);
+                }
+            });
         }
         List<Message> messages = jsonFileAdmin.getAllConversations(logged.getUsername());
         if(!messages.isEmpty()){
             model.setMessages(messages);
-        }
+        }¿
     }
     public void register(){
         try{

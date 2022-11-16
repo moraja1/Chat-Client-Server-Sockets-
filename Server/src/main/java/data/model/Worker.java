@@ -11,7 +11,6 @@ import data.Server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +23,8 @@ public class Worker implements Runnable{
     boolean continuar = true;
     private Thread threadParent;
     private MessageDetails lastMessage;
-    private boolean needsConfirmation = false;
+    private boolean messageConfirmation = false;
+    private boolean contactConfirmation = false;
     public Worker(Server server, ObjectInputStream input, ObjectOutputStream output, User user, Service service) {
         this.server = server;
         this.input = input;
@@ -64,7 +64,7 @@ public class Worker implements Runnable{
                 System.out.println("Operacion: "+ method);
                 switch(method){
                     case Protocol.LOGOUT:
-                        if(needsConfirmation){
+                        if(messageConfirmation){
                             saveLastMessage();
                         }
                         try {
@@ -78,7 +78,7 @@ public class Worker implements Runnable{
                         stop();
                         break;
                     case Protocol.POST:
-                        if(needsConfirmation){
+                        if(messageConfirmation){
                             saveLastMessage();
                         }
                         String messageJson=null;
@@ -92,7 +92,7 @@ public class Worker implements Runnable{
                         }
                         break;
                     case Protocol.ERROR_NO_ERROR:
-                        if(needsConfirmation){
+                        if(messageConfirmation){
                             messageConfirmed();
                         }
                         break;
@@ -109,7 +109,7 @@ public class Worker implements Runnable{
     private void messageConfirmed() {
         service.messageDelivered(lastMessage);
         lastMessage = null;
-        needsConfirmation = false;
+        messageConfirmation = false;
     }
     private void saveLastMessage() {
         service.messageUndelivered(lastMessage);
@@ -118,7 +118,7 @@ public class Worker implements Runnable{
 
     public void deliver(MessageDetails message){
         lastMessage = message;
-        needsConfirmation = true;
+        messageConfirmation = true;
         try {
             String messageJson = ParserToJSON.MessageToJson(message);
             output.writeInt(Protocol.DELIVER);

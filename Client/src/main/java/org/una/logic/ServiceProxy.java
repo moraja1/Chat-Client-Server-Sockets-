@@ -188,6 +188,16 @@ public class ServiceProxy implements IService{
                         break;
                     }
                 }
+                case Protocol.CONTACT_DELIVER: {
+                    /*try{
+                        String contactJson = (String) input.readObject();
+                        controller.notifyLogoutUser(contactJson);
+                    }catch (ClassNotFoundException ex){
+                        output.writeInt(Protocol.ERROR_OPERATON);
+                        output.flush();
+                        break;
+                    }*/
+                }
                 }
                 if(output != null){
                     output.flush();
@@ -200,5 +210,11 @@ public class ServiceProxy implements IService{
    //MEMBER FUNCTIONS
    public void setController(Controller controller) {
         this.controller = controller;
+    }
+    public void askContactState(List<User> contactsList) {
+        for (User u : contactsList){
+            String userJson = ParserToJSON.UserToJson(u);
+
+        }
     }
 }
