@@ -128,8 +128,10 @@ public class Server {
                 wk.stop();
                 workers.remove(wk);
             }
-            if(contactList.contains(wk.getUser())){
-                wk.sendLogoutMessage(u.getUsername());
+            if(!contactList.isEmpty()){
+                if(contactList.contains(wk.getUser())){
+                    wk.sendLogoutMessage(u.getUsername());
+                }
             }
         }
         System.out.println("Quedan: " + workers.size());

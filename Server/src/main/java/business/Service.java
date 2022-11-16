@@ -57,6 +57,8 @@ public class Service {
             if(user != null){
                 dao = new UserDAO();
                 dao.add(user);
+                user = authenticate(user);
+                userJson = ParserToJSON.UserToJson(user);
                 output.writeInt(Protocol.ERROR_NO_ERROR);
                 output.writeObject(userJson);
                 output.flush();

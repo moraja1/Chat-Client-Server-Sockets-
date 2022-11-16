@@ -34,10 +34,24 @@ public class Controller {
             e.printStackTrace();
         }
     }
+    private void initWindow(User logged){
+        model.setCurrentUser(logged);
+        view.loginAccepted(logged.getUsername());
+        List<String> contactsList = jsonFileAdmin.contactListFromJason(logged.getUsername());
+        if(!contactsList.isEmpty()){
+            view.setContactListValues(contactsList.toArray(new String[contactsList.size()]));
+            model.setContactList(contactsList);
+        }
+        List<Message> messages = jsonFileAdmin.getAllConversations(logged.getUsername());
+        if(!messages.isEmpty()){
+            model.setMessages(messages);
+        }
+    }
     public void register(){
         try{
             User user = new User(view.getUsername().getText(), new String(view.getClave().getPassword()));
             User logged = localService.register(user);
+            initWindow(logged);
         }catch (RegisterException e){
             JOptionPane.showMessageDialog(null, "Puede que ya se encuentre un usuario registrado con esa información", "No se pudo registrar", JOptionPane.WARNING_MESSAGE);
         }catch (OperationException | IOException | ClassNotFoundException ex){
@@ -51,17 +65,7 @@ public class Controller {
         try {
             User user = new User(view.getUsername().getText(), new String(view.getClave().getPassword()));
             User logged = localService.login(user);
-            model.setCurrentUser(logged);
-            view.loginAccepted(logged.getUsername());
-            List<String> contactsList = jsonFileAdmin.contactListFromJason(user.getUsername());
-            if(!contactsList.isEmpty()){
-                view.setContactListValues(contactsList.toArray(new String[contactsList.size()]));
-                model.setContactList(contactsList);
-            }
-            List<Message> messages = jsonFileAdmin.getAllConversations(logged.getUsername());
-            if(!messages.isEmpty()){
-                model.setMessages(messages);
-            }
+            initWindow(logged);
         } catch (LoginException e) {
             JOptionPane.showMessageDialog(null, "El usuario ingresado no existe", "No se pudo iniciar sessión", JOptionPane.WARNING_MESSAGE);
         } catch (OperationException | IOException | ClassNotFoundException ex){
@@ -80,14 +84,17 @@ public class Controller {
         jsonFileAdmin.addNewMessage(model.getCurrentUser().getUsername(), model.getUserSelected().getUsername(), message);
     }
     public void logout(){
-        try {
+        if(model.getCurrentUser() != null){
+            try {
             localService.logout(model.getCurrentUser());
-            //model.setMessages(new ArrayList<>());
-            //model.commit(Model.CHAT);
-        } catch (Exception ex) {
+            model.setMessages(new ArrayList<>());
+            model.setCurrentUser(null);
+            model.setUserSelected(null);
+            model.setContactList(null);
+            view.logoutExecuted();
+            } catch (Exception ex) {}
+            model.setCurrentUser(null);
         }
-        model.setCurrentUser(null);
-        //model.commit(Model.USER+Model.CHAT);
     }
     public void deliver(Message message){
         model.getMessages().add(message);

@@ -128,6 +128,7 @@ public class ServiceProxy implements IService{
     private void disconnect() throws IOException {
         socket.shutdownOutput();
         socket.close();
+        socket = null;
     }
     private void stop(){
         continuar=false;

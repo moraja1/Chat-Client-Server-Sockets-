@@ -90,12 +90,6 @@ public class ChatView extends JFrame {
                 }
             }
         });
-        register.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
         post.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -115,6 +109,12 @@ public class ChatView extends JFrame {
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                controller.logout();
+            }
+        });
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
                 controller.logout();
             }
         });
@@ -161,6 +161,18 @@ public class ChatView extends JFrame {
         panel.validate();
     }
 
+    public void logoutExecuted() {
+        setTitle("Please Login");
+        getLoginPanel().setVisible(true);
+        getBodyPanel().setVisible(false);
+        getRootPane().setDefaultButton(login);
+        username.setBackground(Color.WHITE);
+        clave.setBackground(Color.WHITE);
+        username.setText("");
+        clave.setText("");
+        panel.validate();
+    }
+
     public void setContactListValues(String[] contactList) {
         this.contactList.setListData(contactList);
         this.contactList.setSelectedIndex(0);
@@ -201,7 +213,7 @@ public class ChatView extends JFrame {
         login.setText("Login");
         loginPanel.add(login, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         register = new JButton();
-        register.setText("Terminar");
+        register.setText("Registrar");
         loginPanel.add(register, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         bodyPanel = new JPanel();
         bodyPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
