@@ -157,4 +157,10 @@ public class jsonFileAdmin {
         }
         return messages;
     }
+    public static String getLogoutContactList(String username) {
+        JsonObject json = getJsonObject(username);
+        JsonArray contacts = json.getJsonArray("contacts");
+        String contactList = contacts.toString();
+        return contactList;
+    }
 }

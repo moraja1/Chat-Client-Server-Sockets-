@@ -14,6 +14,7 @@ import data.util.Protocol;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +93,14 @@ public class Service {
     public void messageDelivered(Message message) {
         dao = new MessageDAO();
         dao.erase(message);
+    }
+    public void messageDelivered(MessageDetails message) {
+        UserDAO userDAO = new UserDAO();
+        User remitent = userDAO.getSingleObject(message.getRemitent());
+        User destinatary = userDAO.getSingleObject(message.getDestinatary());
+        MessageDAO dao = new MessageDAO();
+        Message messagePersisted = dao.getSingleObject(message.getMessage(), remitent, destinatary, Timestamp.valueOf(message.getDateTime()));
+        dao.erase(messagePersisted);
     }
     public void messageUndelivered(MessageDetails message) {
         UserDAO userDAO = new UserDAO();

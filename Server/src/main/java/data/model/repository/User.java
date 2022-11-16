@@ -60,6 +60,9 @@ public class User {
     }
     public User() {
     }
+    public User(String username) {
+        this.username = username;
+    }
 
     @Override
     public boolean equals(Object o) {

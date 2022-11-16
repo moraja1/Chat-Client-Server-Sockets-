@@ -2,6 +2,7 @@ package org.una.logic;
 
 import org.una.Exceptions.LoginException;
 import org.una.Exceptions.OperationException;
+import org.una.Exceptions.RegisterException;
 import org.una.logic.dto.ParserToJSON;
 import org.una.presentation.controller.Controller;
 import org.una.presentation.model.Message;
@@ -53,15 +54,35 @@ public class ServiceProxy implements IService{
     }
     @Override
     public void logout(User u) throws IOException {
-        output.write(Protocol.LOGOUT);
-        /*output.write(u);
+        String contactListJson = jsonFileAdmin.getLogoutContactList(u.getUsername());
+        output.writeInt(Protocol.LOGOUT);
+        output.writeObject(contactListJson);
         output.flush();
         this.stop();
-        this.disconnect();*/
+        this.disconnect();
     }
     @Override
-    public void register(User u) throws Exception {
+    public User register(User u) throws RegisterException, OperationException, IOException, ClassNotFoundException  {
         connect();
+        String userJson = ParserToJSON.UserToJson(u);
+        try {
+            output.writeInt(Protocol.REGISTER);
+            output.writeObject(userJson);
+            output.flush();
+            int response = input.readInt();
+            if (response == Protocol.ERROR_NO_ERROR){
+                String userResponse = (String) input.readObject();
+                User user = ParserToJSON.JsonToUser(userResponse);
+                this.start();
+                return user;
+            } else if (response == Protocol.ERROR_LOGIN) {
+                throw new RegisterException();
+            } else {
+                throw new OperationException();
+            }
+        } catch (IOException ex) {
+            throw new OperationException();
+        }
     }
     @Override
     public void post(Message message){
@@ -156,11 +177,21 @@ public class ServiceProxy implements IService{
                     output.flush();
                     break;
                 }
+                case Protocol.LOGOUT: {
+                    try{
+                        String messagesJson = (String) input.readObject();
+                        controller.notifyLogoutUser(messagesJson);
+                    }catch (ClassNotFoundException ex){
+                        output.writeInt(Protocol.ERROR_OPERATON);
+                        output.flush();
+                        break;
+                    }
                 }
-                output.flush();
-            } catch (IOException  ex) {
-                ex.printStackTrace();
-            }
+                }
+                if(output != null){
+                    output.flush();
+                }
+            } catch (IOException  ex) {}
         }
     }
    //------------------------------------------------------------------------------------------------------------------

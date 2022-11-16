@@ -2,6 +2,7 @@ package org.una.presentation.controller;
 
 import org.una.Exceptions.LoginException;
 import org.una.Exceptions.OperationException;
+import org.una.Exceptions.RegisterException;
 import org.una.logic.ServiceProxy;
 import org.una.logic.dto.ParserToJSON;
 import org.una.logic.jsonFileAdmin;
@@ -34,6 +35,16 @@ public class Controller {
         }
     }
     public void register(){
+        try{
+            User user = new User(view.getUsername().getText(), new String(view.getClave().getPassword()));
+            User logged = localService.register(user);
+        }catch (RegisterException e){
+            JOptionPane.showMessageDialog(null, "Puede que ya se encuentre un usuario registrado con esa información", "No se pudo registrar", JOptionPane.WARNING_MESSAGE);
+        }catch (OperationException | IOException | ClassNotFoundException ex){
+            JOptionPane.showMessageDialog(null, "Existe un problema de conexión", "No se pudo iniciar sessión", JOptionPane.WARNING_MESSAGE);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
     public void login(){
@@ -70,7 +81,7 @@ public class Controller {
     }
     public void logout(){
         try {
-            ServiceProxy.getInstance().logout(model.getCurrentUser());
+            localService.logout(model.getCurrentUser());
             //model.setMessages(new ArrayList<>());
             //model.commit(Model.CHAT);
         } catch (Exception ex) {
@@ -120,5 +131,9 @@ public class Controller {
             model.getMessages().add(m);
         }
         updateMessages();
+    }
+
+    public void notifyLogoutUser(String messagesJson) {
+        JOptionPane.showMessageDialog(null, messagesJson + " ha cerrado la sesión", "Información", JOptionPane.INFORMATION_MESSAGE);
     }
 }

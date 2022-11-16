@@ -9,8 +9,6 @@ import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.List;
-import java.util.Vector;
 
 public class ChatView extends JFrame {
     private JPanel panel;
@@ -18,7 +16,7 @@ public class ChatView extends JFrame {
     private JTextField username;
     private JPasswordField clave;
     private JButton login;
-    private JButton finish;
+    private JButton register;
     private JPanel bodyPanel;
     private JTextField mensaje;
     private JButton post;
@@ -72,13 +70,27 @@ public class ChatView extends JFrame {
                 }
             }
         });
-        finish.addActionListener(new ActionListener() {
+        register.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.logout();
+                if (!username.getText().isEmpty() && !new String(clave.getPassword()).isEmpty()) {
+                    username.setBackground(Color.white);
+                    clave.setBackground(Color.white);
+                    try {
+                        controller.register();
+                        username.setText("");
+                        clave.setText("");
+                    } catch (Exception ex) {
+                        username.setBackground(Color.orange);
+                        clave.setBackground(Color.orange);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Debe llenar todos los datos",
+                            "Error", JOptionPane.WARNING_MESSAGE);
+                }
             }
         });
-        finish.addActionListener(new ActionListener() {
+        register.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.exit(0);
@@ -98,6 +110,12 @@ public class ChatView extends JFrame {
                 if (e.getClickCount() == 2) {
                     controller.partnerSelected((String) contactList.getSelectedValue());
                 }
+            }
+        });
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.logout();
             }
         });
         setVisible(true);
@@ -182,9 +200,9 @@ public class ChatView extends JFrame {
         login = new JButton();
         login.setText("Login");
         loginPanel.add(login, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        finish = new JButton();
-        finish.setText("Terminar");
-        loginPanel.add(finish, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        register = new JButton();
+        register.setText("Terminar");
+        loginPanel.add(register, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         bodyPanel = new JPanel();
         bodyPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(bodyPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));

@@ -4,10 +4,15 @@ import data.dao.UserDAO;
 import data.dto.MessageDetails;
 import data.model.repository.Message;
 import data.model.repository.User;
+import jakarta.json.Json;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.JsonbConfig;
 
+import java.io.StringReader;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +39,12 @@ public class ParserToJSON {
         return jsonb.toJson(message);
     }
     public static List<User> JsonToUsers(String userListJson) {
-        Jsonb jsonb = JsonbBuilder.create();
+        JsonReader jsonReader = Json.createReader(new StringReader(userListJson));
+        JsonValue jsonValue = jsonReader.read();
         List<User> contactList = new ArrayList<>();
-        contactList = jsonb.fromJson(userListJson, new ArrayList<Message>(){}.getClass().getGenericSuperclass());
+        for (JsonString js : jsonValue.asJsonArray().getValuesAs(JsonString.class)){
+            contactList.add(new User(js.getString()));
+        }
         return contactList;
     }
 }
