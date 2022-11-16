@@ -33,11 +33,11 @@ public class User {
     @OneToMany(mappedBy = "destinatary")
     @JsonbTransient
     private Set<Message> messages;
-    @JsonbProperty("idUser")
+    @JsonbTransient
     public Long getIdUser() {
         return idUser;
     }
-    @JsonbProperty("idUser")
+    @JsonbTransient
     public void setIdUser(Long idUser) {
         this.idUser = idUser;
     }

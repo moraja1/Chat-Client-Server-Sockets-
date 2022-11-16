@@ -9,6 +9,8 @@ import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ChatView extends JFrame {
     private JPanel panel;
@@ -174,9 +176,11 @@ public class ChatView extends JFrame {
     }
 
     public void setContactListValues(String[] contactList) {
+        this.contactList.setListData(new ArrayList<String>().toArray());
         this.contactList.setListData(contactList);
         this.contactList.setSelectedIndex(0);
         this.contactList.dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_CLICKED, 1, MouseEvent.BUTTON1, 0, 0, 2, false));
+        this.contactList.validate();
     }
 
     {

@@ -2,6 +2,7 @@ package data.model;
 
 import business.Service;
 import data.dto.MessageDetails;
+import data.dto.UserDetails;
 import data.model.repository.Message;
 import data.model.repository.User;
 import data.util.ParserToJSON;
@@ -23,7 +24,8 @@ public class Worker implements Runnable{
     boolean continuar = true;
     private Thread threadParent;
     private MessageDetails lastMessage;
-    private boolean messageConfirmation = false;
+    private boolean needsConfirmation = false;
+    private boolean messageConfirmed = false;
     private boolean contactConfirmation = false;
     public Worker(Server server, ObjectInputStream input, ObjectOutputStream output, User user, Service service) {
         this.server = server;
@@ -57,6 +59,7 @@ public class Worker implements Runnable{
     }
     public void listen(){
         int method;
+        String messageJson;
 
         while (continuar) {
             try {
@@ -64,7 +67,7 @@ public class Worker implements Runnable{
                 System.out.println("Operacion: "+ method);
                 switch(method){
                     case Protocol.LOGOUT:
-                        if(messageConfirmation){
+                        if(needsConfirmation){
                             saveLastMessage();
                         }
                         try {
@@ -78,10 +81,10 @@ public class Worker implements Runnable{
                         stop();
                         break;
                     case Protocol.POST:
-                        if(messageConfirmation){
+                        if(needsConfirmation){
                             saveLastMessage();
                         }
-                        String messageJson=null;
+                        messageJson = null;
                         try {
                             messageJson = (String) input.readObject();
                             MessageDetails message = ParserToJSON.JsonToMessage(messageJson);
@@ -92,8 +95,21 @@ public class Worker implements Runnable{
                         }
                         break;
                     case Protocol.ERROR_NO_ERROR:
-                        if(messageConfirmation){
+                        if(needsConfirmation){
+                            saveLastMessage();
+                        }
+                        break;
+                    case Protocol.CONTACT_DELIVER:
+                        if(needsConfirmation){
                             messageConfirmed();
+                        }
+                        messageJson = null;
+                        try {
+                            messageJson = (String) input.readObject();
+                            UserDetails contact = ParserToJSON.JsonToContact(messageJson);
+                            service.sendContactState(this, contact);
+                        } catch (ClassNotFoundException ex) {
+                            ex.printStackTrace();
                         }
                         break;
                     default:
@@ -102,14 +118,13 @@ public class Worker implements Runnable{
                 output.flush();
             } catch (IOException  ex) {
                 continuar = false;
-                ex.printStackTrace();
             }                        
         }
     }
     private void messageConfirmed() {
         service.messageDelivered(lastMessage);
         lastMessage = null;
-        messageConfirmation = false;
+        needsConfirmation = false;
     }
     private void saveLastMessage() {
         service.messageUndelivered(lastMessage);
@@ -118,7 +133,7 @@ public class Worker implements Runnable{
 
     public void deliver(MessageDetails message){
         lastMessage = message;
-        messageConfirmation = true;
+        needsConfirmation = true;
         try {
             String messageJson = ParserToJSON.MessageToJson(message);
             output.writeInt(Protocol.DELIVER);
@@ -142,5 +157,14 @@ public class Worker implements Runnable{
     }
     public User getUser() {
         return user;
+    }
+    public void sendContactState(String contactJson) {
+        try {
+            output.writeInt(Protocol.CONTACT_DELIVER);
+            output.writeObject(contactJson);
+            output.flush();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

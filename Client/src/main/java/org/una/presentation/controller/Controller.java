@@ -15,13 +15,13 @@ import javax.swing.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Controller {
     private ChatView view;
     private Model model;
     private ServiceProxy localService;
+    private List<String> contactList = new ArrayList<>();
     public Controller(ChatView view, Model model) {
         this.view = view;
         this.model = model;
@@ -43,7 +43,7 @@ public class Controller {
             contactsList.add(new User(s));
         }
         if(!contactsList.isEmpty()){
-            view.setContactListValues(contactsList.toArray(new String[contactsList.size()]));
+            view.setContactListValues(contactsUsernames.toArray(new String[contactsUsernames.size()]));
             model.setContactList(contactsList);
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -55,7 +55,7 @@ public class Controller {
         List<Message> messages = jsonFileAdmin.getAllConversations(logged.getUsername());
         if(!messages.isEmpty()){
             model.setMessages(messages);
-        }¿
+        }
     }
     public void register(){
         try{
@@ -109,9 +109,13 @@ public class Controller {
     public void deliver(Message message){
         model.getMessages().add(message);
         jsonFileAdmin.addNewMessage(model.getCurrentUser().getUsername(), message.getRemitent(), message);
-        if(!model.getContactList().contains(message.getRemitent())){
-            model.getContactList().add(message.getRemitent());
-            view.setContactListValues(model.getContactList().toArray(new String[model.getContactList().size()]));
+        if(!model.getContactList().contains(new User(message.getRemitent()))){
+            model.getContactList().add(new User(message.getRemitent()));
+            List<String> contactList = new ArrayList<>();
+            for(User u : model.getContactList()){
+                contactList.add(u.getUsername());
+            }
+            view.setContactListValues(contactList.toArray(new String[contactList.size()]));
             jsonFileAdmin.addNewContact(model.getCurrentUser().getUsername(), message.getRemitent());
         }
         updateMessages();
@@ -152,5 +156,33 @@ public class Controller {
 
     public void notifyLogoutUser(String messagesJson) {
         JOptionPane.showMessageDialog(null, messagesJson + " ha cerrado la sesión", "Información", JOptionPane.INFORMATION_MESSAGE);
+    }
+    public void updateContacts(String contactJson) {
+        User contact = ParserToJSON.JsonToUser(contactJson);
+        for(User u : model.getContactList()){
+            if(u.getUsername().equals(contact.getUsername())) {
+                if (u.isConected() != contact.isConected()) {
+                    u.setConected(contact.isConected());
+                }
+                String contactString = contact.getUsername() + " - ";
+                if(u.isConected()){
+                    contactString += "Conected";
+                }else{
+                    contactString += "Disconected";
+                }
+                if(!contactList.contains(contactString)){
+                    contactList.add(contactString);
+                }
+                break;
+            }
+        }
+        if(contactList.size() == model.getContactList().size()){
+            printContacts(contactList);
+        }
+    }
+    private void printContacts(List<String> contactList) {
+        if(!contactList.isEmpty()){
+            view.setContactListValues(contactList.toArray(new String[contactList.size()]));
+        }
     }
 }

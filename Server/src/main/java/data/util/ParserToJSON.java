@@ -2,6 +2,7 @@ package data.util;
 
 import data.dao.UserDAO;
 import data.dto.MessageDetails;
+import data.dto.UserDetails;
 import data.model.repository.Message;
 import data.model.repository.User;
 import jakarta.json.Json;
@@ -46,5 +47,13 @@ public class ParserToJSON {
             contactList.add(new User(js.getString()));
         }
         return contactList;
+    }
+    public static UserDetails JsonToContact(String messageJson) {
+        Jsonb jsonb = JsonbBuilder.create();
+        return jsonb.fromJson(messageJson, UserDetails.class);
+    }
+    public static String contactToJson(UserDetails contact) {
+        Jsonb jsonb = JsonbBuilder.create();
+        return jsonb.toJson(contact);
     }
 }

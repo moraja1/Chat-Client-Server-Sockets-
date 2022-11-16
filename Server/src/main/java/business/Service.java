@@ -3,6 +3,8 @@ package business;
 import data.Server;
 import data.dao.MessageDAO;
 import data.dto.MessageDetails;
+import data.dto.UserDetails;
+import data.model.Worker;
 import data.util.Exceptions.LoginException;
 import data.util.Exceptions.RegisterException;
 import data.dao.DAO;
@@ -14,7 +16,6 @@ import data.util.Protocol;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,5 +122,15 @@ public class Service {
     }
     public void setServer(Server server) {
         this.server = server;
+    }
+
+    public void sendContactState(Worker worker, UserDetails contact) {
+        for (User u : usersLoggedIn){
+            if(u.getUsername().equals(contact.getUsername())){
+                contact.setConnected(true);
+            }
+            String contactJson = ParserToJSON.contactToJson(contact);
+            worker.sendContactState(contactJson);
+        }
     }
 }
