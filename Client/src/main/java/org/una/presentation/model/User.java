@@ -56,4 +56,15 @@ public class User {
     public void setConected(boolean connected) {
         this.connected = connected;
     }
+
+    @Override
+    public String toString() {
+        String s = username;
+        if(connected){
+            s += " - Conected";
+        }else{
+            s += " - Disconected";
+        }
+        return s;
+    }
 }

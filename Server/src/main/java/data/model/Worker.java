@@ -167,4 +167,13 @@ public class Worker implements Runnable{
             ex.printStackTrace();
         }
     }
+    public void sendLoginMessage(String username) {
+        try {
+            output.writeInt(Protocol.LOGIN);
+            output.writeObject(username);
+            output.flush();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }

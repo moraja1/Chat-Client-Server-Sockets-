@@ -3,6 +3,7 @@ package data;
 
 import business.Service;
 import data.dto.MessageDetails;
+import data.dto.UserDetails;
 import data.model.repository.Message;
 import data.model.repository.User;
 import data.model.Worker;
@@ -19,6 +20,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class Server {
@@ -123,16 +125,22 @@ public class Server {
         }
     }
     public void removeWorker(User u, List<User> contactList){
-        for(Worker wk : workers){
-            if(wk.getUser().equals(u)){
-                wk.stop();
-                workers.remove(wk);
-            }
-            if(!contactList.isEmpty()){
-                if(contactList.contains(wk.getUser())){
-                    wk.sendLogoutMessage(u.getUsername());
+        List<Worker> removeWorkers = new ArrayList<>(workers);
+        synchronized (workers){
+            Iterator<Worker> i = workers.listIterator();
+            while(i.hasNext()){
+                Worker wk = i.next();
+                if(wk.getUser().equals(u)){
+                    wk.stop();
+                    removeWorkers.remove(wk);
+                }
+                if(!contactList.isEmpty()){
+                    if(contactList.contains(wk.getUser())){
+                        wk.sendLogoutMessage(u.getUsername());
+                    }
                 }
             }
+            workers = removeWorkers;
         }
         System.out.println("Quedan: " + workers.size());
     }
@@ -154,5 +162,13 @@ public class Server {
         }).start();
         //Saco el sistema del bucle
         exit = true;
+    }
+    public void newUserConnected(User user, UserDetails contact) {
+        String destinatary = contact.getUsername();
+        for(Worker w : workers){
+            if(w.getUser().getUsername().equals(destinatary)){
+                w.sendLoginMessage(user.getUsername());
+            }
+        }
     }
 }

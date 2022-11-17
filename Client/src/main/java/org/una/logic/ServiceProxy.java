@@ -144,60 +144,70 @@ public class ServiceProxy implements IService{
                 System.out.println("DELIVERY");
                 System.out.println("Operacion: " + method);
                 switch(method){
-                case Protocol.RECEIVE: {
-                    try {
-                        String messageJson = (String) input.readObject();
-                        if(!messageJson.isEmpty()){
-                            Message message = ParserToJSON.JsonToMessage(messageJson);
-                            deliver(message);
-                        }
-                    } catch (ClassNotFoundException ex) {
-                        output.writeInt(Protocol.ERROR_OPERATON);
-                        output.flush();
-                        break;
-                    }
-                    output.writeInt(Protocol.ERROR_NO_ERROR);
-                    output.flush();
-                    break;
-                }
-                case Protocol.RECEIVE_COLLECTION: {
-                    try {
-                        String messagesJson = (String) input.readObject();
-                        if(!messagesJson.isEmpty()){
-                            List<Message> messages = ParserToJSON.JsonToMessageList(messagesJson);
-                            for(Message message : messages){
+                    case Protocol.RECEIVE: {
+                        try {
+                            String messageJson = (String) input.readObject();
+                            if(!messageJson.isEmpty()){
+                                Message message = ParserToJSON.JsonToMessage(messageJson);
                                 deliver(message);
                             }
+                        } catch (ClassNotFoundException ex) {
+                            output.writeInt(Protocol.ERROR_OPERATON);
+                            output.flush();
+                            break;
                         }
-                    } catch (ClassNotFoundException ex) {
-                        output.writeInt(Protocol.ERROR_OPERATON);
+                        output.writeInt(Protocol.ERROR_NO_ERROR);
                         output.flush();
                         break;
                     }
-                    output.writeInt(Protocol.ERROR_NO_ERROR);
-                    output.flush();
-                    break;
-                }
-                case Protocol.LOGOUT: {
-                    try{
-                        String messagesJson = (String) input.readObject();
-                        controller.notifyLogoutUser(messagesJson);
-                    }catch (ClassNotFoundException ex){
-                        output.writeInt(Protocol.ERROR_OPERATON);
+                    case Protocol.RECEIVE_COLLECTION: {
+                        try {
+                            String messagesJson = (String) input.readObject();
+                            if(!messagesJson.isEmpty()){
+                                List<Message> messages = ParserToJSON.JsonToMessageList(messagesJson);
+                                for(Message message : messages){
+                                    deliver(message);
+                                }
+                            }
+                        } catch (ClassNotFoundException ex) {
+                            output.writeInt(Protocol.ERROR_OPERATON);
+                            output.flush();
+                            break;
+                        }
+                        output.writeInt(Protocol.ERROR_NO_ERROR);
                         output.flush();
                         break;
                     }
-                }
-                case Protocol.CONTACT_DELIVER: {
-                    try{
-                        String contactJson = (String) input.readObject();
-                        controller.updateContacts(contactJson);
-                    }catch (ClassNotFoundException ex){
-                        output.writeInt(Protocol.ERROR_OPERATON);
-                        output.flush();
-                        break;
+                    case Protocol.LOGOUT: {
+                        try{
+                            String messagesJson = (String) input.readObject();
+                            controller.notifyLogoutUser(messagesJson);
+                        }catch (ClassNotFoundException ex){
+                            output.writeInt(Protocol.ERROR_OPERATON);
+                            output.flush();
+                            break;
+                        }
                     }
-                }
+                    case Protocol.CONTACT_DELIVER: {
+                        try{
+                            String contactJson = (String) input.readObject();
+                            controller.updateContacts(contactJson);
+                        }catch (ClassNotFoundException ex){
+                            output.writeInt(Protocol.ERROR_OPERATON);
+                            output.flush();
+                            break;
+                        }
+                    }
+                    case Protocol.LOGIN: {
+                        try{
+                            String username = (String) input.readObject();
+                            controller.notifyLoginUser(username);
+                        }catch (ClassNotFoundException ex){
+                            output.writeInt(Protocol.ERROR_OPERATON);
+                            output.flush();
+                            break;
+                        }
+                    }
                 }
                 if(output != null){
                     output.flush();

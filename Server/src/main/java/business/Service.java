@@ -128,6 +128,7 @@ public class Service {
         for (User u : usersLoggedIn){
             if(u.getUsername().equals(contact.getUsername())){
                 contact.setConnected(true);
+                server.newUserConnected(worker.getUser(), contact);
             }
             String contactJson = ParserToJSON.contactToJson(contact);
             worker.sendContactState(contactJson);

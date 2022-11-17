@@ -147,11 +147,13 @@ public class jsonFileAdmin {
         if(conversations != null){
             if(!conversations.isEmpty()){
                 for(JsonValue jo : conversations.values()){
-                    JsonObject v = jo.asJsonObject();
-                    messages.add(new Message(v.getString("message"),
-                            v.getString("remitent"),
-                            v.getString("destinatary"),
-                            LocalDateTime.parse(v.getString("dateTime"))));
+                    JsonArray v = jo.asJsonArray();
+                    for(JsonObject value : v.getValuesAs(JsonObject.class)){
+                        messages.add(new Message(value.getString("message"),
+                                value.getString("remitent"),
+                                value.getString("destinatary"),
+                                LocalDateTime.parse(value.getString("dateTime"))));
+                    }
                 }
             }
         }

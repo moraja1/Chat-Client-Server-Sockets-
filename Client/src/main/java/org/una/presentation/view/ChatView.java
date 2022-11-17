@@ -4,6 +4,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.una.application.Application;
 import org.una.presentation.controller.Controller;
+import org.una.presentation.model.User;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
@@ -11,6 +12,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 public class ChatView extends JFrame {
     private JPanel panel;
@@ -104,7 +107,7 @@ public class ChatView extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    controller.partnerSelected((String) contactList.getSelectedValue());
+                    controller.partnerSelected((User) contactList.getSelectedValue());
                 }
             }
         });
@@ -173,14 +176,6 @@ public class ChatView extends JFrame {
         username.setText("");
         clave.setText("");
         panel.validate();
-    }
-
-    public void setContactListValues(String[] contactList) {
-        this.contactList.setListData(new ArrayList<String>().toArray());
-        this.contactList.setListData(contactList);
-        this.contactList.setSelectedIndex(0);
-        this.contactList.dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_CLICKED, 1, MouseEvent.BUTTON1, 0, 0, 2, false));
-        this.contactList.validate();
     }
 
     {
@@ -265,4 +260,13 @@ public class ChatView extends JFrame {
         return panel;
     }
 
+    public void setContactListValues(List<User> contactList) {
+        DefaultListModel<User> listModel = new DefaultListModel<>();
+        for (User u : contactList) {
+            listModel.addElement(u);
+        }
+        this.contactList.setModel(listModel);
+        this.contactList.setSelectedIndex(0);
+        this.contactList.dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_CLICKED, 1, MouseEvent.BUTTON1, 0, 0, 2, false));
+    }
 }

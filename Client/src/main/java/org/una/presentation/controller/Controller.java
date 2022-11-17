@@ -16,12 +16,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class Controller {
     private ChatView view;
     private Model model;
     private ServiceProxy localService;
-    private List<String> contactList = new ArrayList<>();
     public Controller(ChatView view, Model model) {
         this.view = view;
         this.model = model;
@@ -43,14 +43,8 @@ public class Controller {
             contactsList.add(new User(s));
         }
         if(!contactsList.isEmpty()){
-            view.setContactListValues(contactsUsernames.toArray(new String[contactsUsernames.size()]));
+            view.setContactListValues(contactsList);
             model.setContactList(contactsList);
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    localService.askContactState(contactsList);
-                }
-            });
         }
         List<Message> messages = jsonFileAdmin.getAllConversations(logged.getUsername());
         if(!messages.isEmpty()){
@@ -76,6 +70,14 @@ public class Controller {
             User user = new User(view.getUsername().getText(), new String(view.getClave().getPassword()));
             User logged = localService.login(user);
             initWindow(logged);
+            if(!model.getContactList().isEmpty()){
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        localService.askContactState(model.getContactList());
+                    }
+                });
+            }
         } catch (LoginException e) {
             JOptionPane.showMessageDialog(null, "El usuario ingresado no existe", "No se pudo iniciar sessión", JOptionPane.WARNING_MESSAGE);
         } catch (OperationException | IOException | ClassNotFoundException ex){
@@ -111,11 +113,7 @@ public class Controller {
         jsonFileAdmin.addNewMessage(model.getCurrentUser().getUsername(), message.getRemitent(), message);
         if(!model.getContactList().contains(new User(message.getRemitent()))){
             model.getContactList().add(new User(message.getRemitent()));
-            List<String> contactList = new ArrayList<>();
-            for(User u : model.getContactList()){
-                contactList.add(u.getUsername());
-            }
-            view.setContactListValues(contactList.toArray(new String[contactList.size()]));
+            view.setContactListValues(model.getContactList());
             jsonFileAdmin.addNewContact(model.getCurrentUser().getUsername(), message.getRemitent());
         }
         updateMessages();
@@ -140,7 +138,9 @@ public class Controller {
         view.getMessages().setText(text);
     }
 
-    public void partnerSelected(String contactUsername) {
+    public void partnerSelected(User selectedValue) {
+        String contactUsername = selectedValue.getUsername();
+
         model.setUserSelected(new User(contactUsername));
         List<String> messagesByUser = jsonFileAdmin.getConversationWith(model.getCurrentUser().getUsername(), contactUsername);
         List<Message> messages = new ArrayList<>();
@@ -154,35 +154,40 @@ public class Controller {
         updateMessages();
     }
 
-    public void notifyLogoutUser(String messagesJson) {
-        JOptionPane.showMessageDialog(null, messagesJson + " ha cerrado la sesión", "Información", JOptionPane.INFORMATION_MESSAGE);
-    }
-    public void updateContacts(String contactJson) {
-        User contact = ParserToJSON.JsonToUser(contactJson);
-        for(User u : model.getContactList()){
-            if(u.getUsername().equals(contact.getUsername())) {
-                if (u.isConected() != contact.isConected()) {
-                    u.setConected(contact.isConected());
-                }
-                String contactString = contact.getUsername() + " - ";
-                if(u.isConected()){
-                    contactString += "Conected";
-                }else{
-                    contactString += "Disconected";
-                }
-                if(!contactList.contains(contactString)){
-                    contactList.add(contactString);
-                }
+    public void notifyLogoutUser(String username) {
+        JOptionPane.showMessageDialog(null, username + " ha cerrado la sesión", "Información", JOptionPane.INFORMATION_MESSAGE);
+        for (User u : model.getContactList()){
+            if (u.getUsername().equals(username)){
+                u.setConected(false);
                 break;
             }
         }
-        if(contactList.size() == model.getContactList().size()){
-            printContacts(contactList);
+        printContacts(model.getContactList());
+    }
+    public void updateContacts(String contactJson) {
+        User contact = ParserToJSON.JsonToUser(contactJson);
+        for(User u : model.getContactList()) {
+            if (u.getUsername().equals(contact.getUsername())) {
+                if (u.isConected() != contact.isConected()) {
+                    u.setConected(contact.isConected());
+                }
+            }
+        }
+        printContacts(model.getContactList());
+    }
+    private void printContacts(List<User> contactList) {
+        if(!contactList.isEmpty()){
+            view.setContactListValues(contactList);
         }
     }
-    private void printContacts(List<String> contactList) {
-        if(!contactList.isEmpty()){
-            view.setContactListValues(contactList.toArray(new String[contactList.size()]));
+    public void notifyLoginUser(String username) {
+        JOptionPane.showMessageDialog(null, username + " ha iniciado la sesión", "Información", JOptionPane.INFORMATION_MESSAGE);
+        for (User u : model.getContactList()){
+            if (u.getUsername().equals(username)){
+                u.setConected(true);
+                break;
+            }
         }
+        printContacts(model.getContactList());
     }
 }
