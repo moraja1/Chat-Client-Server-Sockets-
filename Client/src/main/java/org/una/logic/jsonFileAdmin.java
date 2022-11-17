@@ -4,14 +4,12 @@ import jakarta.json.*;
 import jakarta.json.stream.JsonGenerator;
 import org.una.presentation.model.Message;
 import org.una.presentation.model.Model;
+import org.una.presentation.model.User;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class jsonFileAdmin {
     private static final String PATH = "src/main/resources/";
@@ -166,9 +164,66 @@ public class jsonFileAdmin {
         String contactList = contacts.toString();
         return contactList;
     }
-
     public static void saveCurrentStatus(Model model) {
-        //FALTA****************************************************
+        List<User> contacts = model.getContactList();
+        List<Message> messages = model.getMessages();
+        String username = model.getCurrentUser().getUsername();
+        JsonValue contacsJson = createContacts(username, contacts);
+        JsonValue convesationsJson = createMessages(username, messages);
+    }
 
+    private static JsonValue createMessages(String username, List<Message> messages) {
+        JsonObject json = getJsonObject(username);
+        List<String> contactOfMessages = new ArrayList<>();
+        for(Message m : messages){
+            if(!contactOfMessages.contains(m.getRemitent()) && !m.getRemitent().equals(username)){
+                contactOfMessages.add(m.getRemitent());
+            }
+            if(!contactOfMessages.contains(m.getDestinatary()) && !m.getDestinatary().equals(username)){
+                contactOfMessages.add(m.getDestinatary());
+            }
+        }
+        JsonValue conversations;
+        jsonBuilder = Json.createObjectBuilder();
+        JsonArrayBuilder jsonAB = Json.createArrayBuilder();
+        for(String s : contactOfMessages){
+            for(Message m : messages){
+                if(s.equals(m.getRemitent()) || s.equals(m.getDestinatary())){
+                    jsonAB.add(Json.createObjectBuilder()
+                            .add("message", m.getMessage())
+                            .add("remitent", m.getRemitent())
+                            .add("destinatary", m.getDestinatary())
+                            .add("dateTime", m.getDateTime().toString()));
+                }
+            }
+            jsonBuilder.add(s, jsonAB.build());
+        }
+        conversations = jsonBuilder.build();
+
+        JsonObject conversationsTag = json.getJsonObject("conversations");
+
+        JsonValue patch = Json.createObjectBuilder().add("conversations", conversations).build();
+        JsonMergePatch jsonMergePatch = Json.createMergePatch(patch);
+        JsonValue result = jsonMergePatch.apply(json);
+
+        saveOnFile(username, result);
+        return null;
+    }
+
+    private static JsonValue createContacts(String username, List<User> contacts) {
+        JsonValue json = getJsonObject(username);
+        json = json.asJsonObject().getJsonArray("contacts");
+        List<String> contactsUsernames = new ArrayList<>();
+        for(User u : contacts){
+            contactsUsernames.add(u.getUsername());
+        }
+        for(JsonString js : json.asJsonArray().getValuesAs(JsonString.class)){
+            if(!contactsUsernames.contains(js.getString())){
+                contactsUsernames.add(js.getString());
+            }
+        }
+        JsonValue jsonValue = Json.createObjectBuilder()
+                .add("contacts", Json.createArrayBuilder(contactsUsernames).build()).build();
+        return jsonValue;
     }
 }

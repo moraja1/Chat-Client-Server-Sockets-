@@ -4,5 +4,33 @@
         "jaison"
     ],
     "conversations": {
+        "daniel": [
+        ],
+        "jaison": [
+            {
+                "message": "Hola",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-17T14:38:28"
+            },
+            {
+                "message": "Todo bien",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-17T14:39:05"
+            },
+            {
+                "message": "Que paaaa",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-17T16:11:22"
+            },
+            {
+                "message": "Ahora sí mae",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-17T16:22:10"
+            }
+        ]
     }
 }

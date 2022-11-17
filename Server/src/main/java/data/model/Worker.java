@@ -39,22 +39,16 @@ public class Worker implements Runnable{
 
     @Override
     public void run() {
-        sendPendingMessages();
         listen();
     }
 
     private void sendPendingMessages() {
         //Send Pending Messages
         List<Message> pendingMessages = service.getPendingMessages(user);
-        List<MessageDetails> pendingMessagesToSend = new ArrayList<>();
 
         if(!pendingMessages.isEmpty()) {
-            for(Message m : pendingMessages){
-                pendingMessagesToSend.add(new MessageDetails(m));
-            }
-            for(MessageDetails md : pendingMessagesToSend){
-                server.deliver(md);
-            }
+            MessageDetails m = new MessageDetails(pendingMessages.get(0));
+            server.deliver(m);
         }
     }
     public void listen(){
@@ -83,6 +77,7 @@ public class Worker implements Runnable{
                     case Protocol.POST:
                         if(needsConfirmation){
                             saveLastMessage();
+                            sendPendingMessages();
                         }
                         messageJson = null;
                         try {
@@ -96,12 +91,13 @@ public class Worker implements Runnable{
                         break;
                     case Protocol.ERROR_NO_ERROR:
                         if(needsConfirmation){
-                            saveLastMessage();
+                            messageConfirmed();
                         }
+                        sendPendingMessages();
                         break;
                     case Protocol.CONTACT_DELIVER:
                         if(needsConfirmation){
-                            messageConfirmed();
+                            saveLastMessage();
                         }
                         messageJson = null;
                         try {
@@ -112,11 +108,18 @@ public class Worker implements Runnable{
                             ex.printStackTrace();
                         }
                         break;
+                    case Protocol.PENDINGS:
+                        if(needsConfirmation){
+                            saveLastMessage();
+                        }
+                        sendPendingMessages();
+                        break;
                     default:
                         break;
                 }
                 output.flush();
             } catch (IOException  ex) {
+                saveLastMessage();
                 continuar = false;
             }                        
         }
@@ -127,8 +130,11 @@ public class Worker implements Runnable{
         needsConfirmation = false;
     }
     private void saveLastMessage() {
-        service.messageUndelivered(lastMessage);
-        messageConfirmed();
+        if(lastMessage != null){
+            service.messageUndelivered(lastMessage);
+        }
+        lastMessage = null;
+        needsConfirmation = false;
     }
 
     public void deliver(MessageDetails message){

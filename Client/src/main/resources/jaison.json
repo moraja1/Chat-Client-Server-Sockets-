@@ -4,5 +4,117 @@
         "jose"
     ],
     "conversations": {
+        "daniel": [
+            {
+                "message": "Tons",
+                "remitent": "jaison",
+                "destinatary": "daniel",
+                "dateTime": "2022-11-17T13:06:44.695782800"
+            },
+            {
+                "message": "Todo bien",
+                "remitent": "jaison",
+                "destinatary": "daniel",
+                "dateTime": "2022-11-17T13:06:46.837808600"
+            },
+            {
+                "message": "Hola Todo bien?",
+                "remitent": "daniel",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-17T13:09:28"
+            },
+            {
+                "message": "Estás desconectado",
+                "remitent": "daniel",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-17T13:11:13"
+            },
+            {
+                "message": "Hola Todo bien?",
+                "remitent": "daniel",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-17T13:09:28"
+            },
+            {
+                "message": "Estás desconectado",
+                "remitent": "daniel",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-17T13:11:13"
+            },
+            {
+                "message": "Mae que todo bien?",
+                "remitent": "jaison",
+                "destinatary": "daniel",
+                "dateTime": "2022-11-17T14:23:59.586351500"
+            },
+            {
+                "message": "Mae estoy probando",
+                "remitent": "jaison",
+                "destinatary": "daniel",
+                "dateTime": "2022-11-17T16:13:26.623894200"
+            },
+            {
+                "message": "",
+                "remitent": "jaison",
+                "destinatary": "daniel",
+                "dateTime": "2022-11-17T16:13:26.733602200"
+            },
+            {
+                "message": "A ver que",
+                "remitent": "jaison",
+                "destinatary": "daniel",
+                "dateTime": "2022-11-17T16:13:37.646972100"
+            }
+        ],
+        "jose": [
+            {
+                "message": "Hola",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-17T14:38:28.093229100"
+            },
+            {
+                "message": "Todo bien",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-17T14:39:04.674715500"
+            },
+            {
+                "message": "Que paaaa",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-17T16:11:21.776011300"
+            },
+            {
+                "message": "Ahora sí mae",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-17T16:22:09.870440300"
+            },
+            {
+                "message": "Nuevo intento",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-17T16:22:20.801539900"
+            },
+            {
+                "message": "Yo creo que puede ser",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-17T16:22:32.126475500"
+            },
+            {
+                "message": "Vamos a ver mae",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-17T16:25:49.190403600"
+            },
+            {
+                "message": "La 1000 es la vencida",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-17T16:26:03.283094"
+            }
+        ]
     }
 }

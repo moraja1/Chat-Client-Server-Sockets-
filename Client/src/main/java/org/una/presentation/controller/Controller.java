@@ -75,6 +75,7 @@ public class Controller {
                     @Override
                     public void run() {
                         localService.askContactState(model.getContactList());
+                        localService.askPendingMessages();
                     }
                 });
             }
@@ -92,11 +93,12 @@ public class Controller {
         message.setDateTime(LocalDateTime.now());
         model.getMessages().add(message);
         localService.post(message);
-        updateMessages();
-        jsonFileAdmin.addNewMessage(model.getCurrentUser().getUsername(), model.getUserSelected().getUsername(), message);
+        List<Message> messages = new ArrayList<>();
+        partnerSelected(model.getUserSelected());
     }
     public void logout(){
         if(model.getCurrentUser() != null){
+            jsonFileAdmin.saveCurrentStatus(model);
             try {
             localService.logout(model.getCurrentUser());
             model.setMessages(new ArrayList<>());
@@ -107,26 +109,26 @@ public class Controller {
             } catch (Exception ex) {}
             model.setCurrentUser(null);
         }
-        jsonFileAdmin.saveCurrentStatus(model);
     }
     public void deliver(Message message){
         model.getMessages().add(message);
-        jsonFileAdmin.addNewMessage(model.getCurrentUser().getUsername(), message.getRemitent(), message);
-        if(!model.getContactList().contains(new User(message.getRemitent()))){
+        List<String> usernames = new ArrayList<>();
+        for(User u : model.getContactList()){
+            usernames.add(u.getUsername());
+        }
+        if(!usernames.contains(message.getRemitent())){
             model.getContactList().add(new User(message.getRemitent()));
             view.setContactListValues(model.getContactList());
             jsonFileAdmin.addNewContact(model.getCurrentUser().getUsername(), message.getRemitent());
         }
-        updateMessages();
     }
-    public void updateMessages() {
+    public void updateMessages(List<Message> messages) {
         //----------------------------Buscar el usuario seleccionado-----------------------------------------
         String selectedUser = model.getUserSelected().getUsername();
         String currentUser = model.getCurrentUser().getUsername();
 
         view.getMessages().setText("");
         String text = "";
-        List<Message> messages = model.getMessages();
 
         //----------------------------ESCRIBO EN PANTALLA----------------------------
         for(Message m : messages){
@@ -139,20 +141,18 @@ public class Controller {
         view.getMessages().setText(text);
     }
 
-    public void partnerSelected(User selectedValue) {
-        String contactUsername = selectedValue.getUsername();
+    public void partnerSelected(User userSelected) {
+        String uName = userSelected.getUsername();
 
-        model.setUserSelected(new User(contactUsername));
-        List<String> messagesByUser = jsonFileAdmin.getConversationWith(model.getCurrentUser().getUsername(), contactUsername);
+        model.setUserSelected(userSelected);
+        List<String> messagesByUser = jsonFileAdmin.getConversationWith(model.getCurrentUser().getUsername(), uName);
         List<Message> messages = new ArrayList<>();
-        for(String s : messagesByUser){
-            messages.add(ParserToJSON.JsonToMessage(s));
+        for(Message m : model.getMessages()){
+            if(uName.equals(m.getRemitent()) || uName.equals(m.getDestinatary())){
+                messages.add(m);
+            }
         }
-        model.setMessages(new ArrayList<>());
-        for(Message m : messages){
-            model.getMessages().add(m);
-        }
-        updateMessages();
+        updateMessages(messages);
     }
 
     public void notifyLogoutUser(String username) {

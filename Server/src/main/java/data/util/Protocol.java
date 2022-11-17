@@ -14,4 +14,5 @@ public class Protocol {
     public static final int ERROR_LOGIN=12;
     public static final int ERROR_OPERATON = 14;
     public static final int ERROR_REGISTER = 15;
+    public static final int PENDINGS = 16;
 }

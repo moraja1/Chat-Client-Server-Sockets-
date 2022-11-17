@@ -148,6 +148,8 @@ public class ServiceProxy implements IService{
                         try {
                             String messageJson = (String) input.readObject();
                             if(!messageJson.isEmpty()){
+                                output.writeInt(Protocol.ERROR_NO_ERROR);
+                                output.flush();
                                 Message message = ParserToJSON.JsonToMessage(messageJson);
                                 deliver(message);
                             }
@@ -156,8 +158,7 @@ public class ServiceProxy implements IService{
                             output.flush();
                             break;
                         }
-                        output.writeInt(Protocol.ERROR_NO_ERROR);
-                        output.flush();
+
                         break;
                     }
                     case Protocol.RECEIVE_COLLECTION: {
@@ -229,6 +230,14 @@ public class ServiceProxy implements IService{
                 output.writeObject(userJson);
                 output.flush();
             }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public void askPendingMessages() {
+        try{
+            output.writeInt(Protocol.PENDINGS);
+            output.flush();
         }catch (Exception e){
             e.printStackTrace();
         }
