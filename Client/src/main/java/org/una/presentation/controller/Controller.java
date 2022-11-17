@@ -107,6 +107,7 @@ public class Controller {
             } catch (Exception ex) {}
             model.setCurrentUser(null);
         }
+        jsonFileAdmin.saveCurrentStatus(model);
     }
     public void deliver(Message message){
         model.getMessages().add(message);

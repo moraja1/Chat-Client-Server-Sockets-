@@ -3,6 +3,7 @@ package org.una.logic;
 import jakarta.json.*;
 import jakarta.json.stream.JsonGenerator;
 import org.una.presentation.model.Message;
+import org.una.presentation.model.Model;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -164,5 +165,10 @@ public class jsonFileAdmin {
         JsonArray contacts = json.getJsonArray("contacts");
         String contactList = contacts.toString();
         return contactList;
+    }
+
+    public static void saveCurrentStatus(Model model) {
+        //FALTA****************************************************
+
     }
 }
