@@ -16,6 +16,7 @@ import data.util.Protocol;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,27 +91,40 @@ public class Service {
     }
     public List<Message> getPendingMessages(User user) {
         MessageDAO dao = new MessageDAO();
-        List<Message> pendingMessages = dao.getPendingMessages(user);
+        List<Message> messages = dao.getAllObjects();
+        List<Message> pendingMessages = new ArrayList<>();
+        for(Message m : messages){
+            if(m.getDestinatary().getUsername().equals(user.getUsername())){
+                pendingMessages.add(m);
+            }
+        }
         return pendingMessages;
     }
     public void messageDelivered(Message message) {
         dao = new MessageDAO();
         dao.erase(message);
     }
-    public void messageDelivered(MessageDetails message) {
+    public void messageDelivered(String messagesJson) {
+        List<MessageDetails> messages = ParserToJSON.JsonToMessages(messagesJson);
         UserDAO userDAO = new UserDAO();
-        User remitent = userDAO.getSingleObject(message.getRemitent());
-        User destinatary = userDAO.getSingleObject(message.getDestinatary());
-        MessageDAO dao = new MessageDAO();
-        Message messagePersisted = dao.getSingleObject(message.getMessage(), remitent, destinatary, Timestamp.valueOf(message.getDateTime()));
-        dao.erase(messagePersisted);
+        User destinatary = userDAO.getSingleObject(messages.get(0).getDestinatary());
+        List<Message> messagesPersisted = getPendingMessages(destinatary);
+        if(!messagesPersisted.isEmpty()){
+            MessageDAO dao = new MessageDAO();
+            for(Message me : messagesPersisted){
+                dao.erase(me);
+            }
+        }
     }
     public void messageUndelivered(MessageDetails message) {
         UserDAO userDAO = new UserDAO();
         User remitent = userDAO.getSingleObject(message.getRemitent());
         User destinatary = userDAO.getSingleObject(message.getDestinatary());
-        dao = new MessageDAO();
-        dao.add(new Message(message.getMessage(), Timestamp.valueOf(message.getDateTime()), remitent, destinatary));
+        MessageDAO dao = new MessageDAO();
+        Message messagePersisted = dao.getSingleObject(message.getMessage(), remitent, destinatary, Timestamp.valueOf(message.getDateTime()));
+        if(messagePersisted == null){
+            dao.add(new Message(message.getMessage(), Timestamp.valueOf(message.getDateTime()), remitent, destinatary));
+        }
     }
     public List<User> getPersistedUsers(List<User> contactList) {
         List<User> persistedUsers = new ArrayList<>();
@@ -133,5 +147,9 @@ public class Service {
             String contactJson = ParserToJSON.contactToJson(contact);
             worker.sendContactState(contactJson);
         }
+    }
+    public void messageUndelivered(String pending) {
+        MessageDetails messageDetails = ParserToJSON.JsonToMessage(pending);
+        messageUndelivered(messageDetails);
     }
 }

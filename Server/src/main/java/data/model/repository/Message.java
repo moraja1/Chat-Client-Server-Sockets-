@@ -11,7 +11,8 @@ import java.sql.Timestamp;
 @Table(name = "message", schema = "chat")
 @NamedQueries({
         @NamedQuery(name = "Message.findByDestinatary", query = "select m from Message m where m.destinatary = :destinatary"),
-        @NamedQuery(name = "Message.findByField", query = "select m from Message m where m.message = :message and m.remitent = :remitent and m.destinatary = :destinatary and m.dateTime = :dateTime")
+        @NamedQuery(name = "Message.findByField", query = "select m from Message m where m.message = :message and m.remitent = :remitent and m.destinatary = :destinatary and m.dateTime = :dateTime"),
+        @NamedQuery(name = "Message.findAll", query = "select m from Message m")
 })
 public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

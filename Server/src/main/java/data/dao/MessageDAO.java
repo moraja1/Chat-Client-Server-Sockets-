@@ -13,7 +13,24 @@ import java.util.List;
 public class MessageDAO extends DAO<Message> {
     @Override
     public List<Message> getAllObjects() {
-        return null;
+        List<Message> messages;
+        Transaction transaction = null;
+        Session session;
+        try {
+            session = sessionFactory.openSession();
+            transaction = session.beginTransaction();
+            TypedQuery<Message> query = session.createNamedQuery("Message.findAll", Message.class);
+            messages = query.getResultList();
+            transaction.commit();
+            session.close();
+        }catch(Exception ex){
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            messages = new ArrayList<>();
+            ex.printStackTrace();
+        }
+        return messages;
     }
 
     @Override
@@ -29,8 +46,8 @@ public class MessageDAO extends DAO<Message> {
             transaction = session.beginTransaction();
             TypedQuery<Message> query = session.createNamedQuery("Message.findByField", Message.class);
             query.setParameter("message", message);
-            query.setParameter("remitent", remitent);
-            query.setParameter("destinatary", destinatary);
+            query.setParameter("remitent", remitent.getIdUser());
+            query.setParameter("destinatary", destinatary.getIdUser());
             query.setParameter("dateTime", dateTime);
             messagePersisted = query.getSingleResult();
             transaction.commit();
@@ -62,5 +79,23 @@ public class MessageDAO extends DAO<Message> {
             ex.printStackTrace();
         }
         return messagesByUSer;
+    }
+    public boolean erase(Long Id){
+        Transaction transaction = null;
+        Session session;
+        try {
+            session = sessionFactory.openSession();
+            transaction = session.beginTransaction();
+            session.remove(Id);
+            transaction.commit();
+            session.close();
+        }catch(Exception ex){
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            ex.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

@@ -34,7 +34,6 @@ public class jsonFileAdmin {
             }
         }
     }
-
     public static List<String> contactListFromJason(String username) {
         JsonObject json = getJsonObject(username);
         JsonArray contacts = json.getJsonArray("contacts");
@@ -44,21 +43,6 @@ public class jsonFileAdmin {
         }
         return contactList;
     }
-
-    public static List<String> getConversationWith(String username, String contactUsername) {
-        JsonObject json = getJsonObject(username);
-        JsonArray messagesJson = getJsonConversationsWith(json, contactUsername);
-        List<String> messages = new ArrayList<>();
-        if(messagesJson == null){
-            createMessagesSpace(json, username, contactUsername);
-        }else{
-            for(JsonObject jv : messagesJson.getValuesAs(JsonObject.class)){
-                messages.add(jv.toString());
-            }
-        }
-        return messages;
-    }
-
     private static JsonObject getJsonObject(String username){
         loadFile(username);
         String fileAsJson;
@@ -70,7 +54,6 @@ public class jsonFileAdmin {
         JsonReader jsonReader = Json.createReader(new StringReader(fileAsJson));
         return jsonReader.readObject();
     }
-
     private static void saveOnFile(String username, JsonValue result) {
         loadFile(username);
         properties.put(JsonGenerator.PRETTY_PRINTING, true);
@@ -81,62 +64,6 @@ public class jsonFileAdmin {
             jsonWriter.writeObject(result.asJsonObject());
             jsonWriter.close();
         }catch (Exception e){}
-    }
-    public static void addNewMessage(String username, String contactUsername, Message message) {
-        JsonObject json = getJsonObject(username);
-
-        //-------------------Obtaining Json Messages-----------------------
-        JsonArray messages = getJsonConversationsWith(json, contactUsername);
-        if(messages == null){
-            createMessagesSpace(json, username, contactUsername);
-            json = getJsonObject(username);
-            messages = getJsonConversationsWith(json, contactUsername);
-        }
-        //-------------------Create Json to be added----------------------------
-        JsonValue patch = Json.createArrayBuilder(messages).add(Json.createObjectBuilder()
-                        .add("message", message.getMessage())
-                        .add("remitent", message.getRemitent())
-                        .add("destinatary", message.getDestinatary())
-                        .add("dateTime", message.getDateTime().toString()).build()).build();
-
-        //---------------------Merge it on Messages Json-----------------------
-        JsonMergePatch jsonMergePatch = Json.createMergePatch(patch);
-        JsonValue result = jsonMergePatch.apply(messages);
-
-        //---------------------Merge it on Conversation Json------------------
-        JsonObject conversations = json.getJsonObject("conversations");
-        patch = Json.createObjectBuilder().add(contactUsername, result).build();
-        jsonMergePatch = Json.createMergePatch(patch);
-        result = jsonMergePatch.apply(conversations);
-
-        //----------------------Merge it on File Json-----------------------
-        patch = Json.createObjectBuilder().add("conversations", result).build();
-        jsonMergePatch = Json.createMergePatch(patch);
-        result = jsonMergePatch.apply(json);
-
-        //-------------------------------Save-----------------------------------
-        saveOnFile(username, result);
-    }
-    private static JsonArray getJsonConversationsWith(JsonObject json, String contactUsername){
-        JsonObject conversations = json.getJsonObject("conversations");
-        return conversations.getJsonArray(contactUsername);
-    }
-    private static void createMessagesSpace(JsonObject json, String username, String contactUsername) {
-        //Creates a space for contact messages
-        JsonValue patch = Json.createObjectBuilder().add("conversations", Json.createObjectBuilder().add(contactUsername, Json.createArrayBuilder().build())).build();
-        JsonMergePatch jsonMergePatch = Json.createMergePatch(patch);
-        JsonValue result = jsonMergePatch.apply(json);
-        //Save it on memory
-        saveOnFile(username, result);
-    }
-    public static void addNewContact(String username, String remitent) {
-        JsonObject json = getJsonObject(username);
-        JsonArray contacts = json.getJsonArray("contacts");
-        //-------------------Create Json to be added----------------------------
-        JsonValue patch = Json.createObjectBuilder().add("contacts", Json.createArrayBuilder(contacts).add(remitent).build()).build();
-        JsonMergePatch jsonMergePatch = Json.createMergePatch(patch);
-        JsonValue result = jsonMergePatch.apply(json);
-        saveOnFile(username, result);
     }
     public static List<Message> getAllConversations(String username) {
         JsonObject json = getJsonObject(username);
@@ -170,6 +97,16 @@ public class jsonFileAdmin {
         String username = model.getCurrentUser().getUsername();
         JsonValue contacsJson = createContacts(username, contacts);
         JsonValue convesationsJson = createMessages(username, messages);
+
+        JsonValue json = getJsonObject(username);
+
+        JsonValue patch = Json.createObjectBuilder()
+                .add("contacts", contacsJson)
+                .add("conversations", convesationsJson)
+                .build();
+        JsonMergePatch jsonMergePatch = Json.createMergePatch(patch);
+        JsonValue result = jsonMergePatch.apply(json);
+        saveOnFile(username, result);
     }
 
     private static JsonValue createMessages(String username, List<Message> messages) {
@@ -200,14 +137,7 @@ public class jsonFileAdmin {
         }
         conversations = jsonBuilder.build();
 
-        JsonObject conversationsTag = json.getJsonObject("conversations");
-
-        JsonValue patch = Json.createObjectBuilder().add("conversations", conversations).build();
-        JsonMergePatch jsonMergePatch = Json.createMergePatch(patch);
-        JsonValue result = jsonMergePatch.apply(json);
-
-        saveOnFile(username, result);
-        return null;
+        return conversations;
     }
 
     private static JsonValue createContacts(String username, List<User> contacts) {
@@ -222,8 +152,8 @@ public class jsonFileAdmin {
                 contactsUsernames.add(js.getString());
             }
         }
-        JsonValue jsonValue = Json.createObjectBuilder()
-                .add("contacts", Json.createArrayBuilder(contactsUsernames).build()).build();
+        JsonValue jsonValue = Json.createArrayBuilder(contactsUsernames).build();
+
         return jsonValue;
     }
 }

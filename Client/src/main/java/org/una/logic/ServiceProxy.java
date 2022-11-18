@@ -150,33 +150,32 @@ public class ServiceProxy implements IService{
                             if(!messageJson.isEmpty()){
                                 output.writeInt(Protocol.ERROR_NO_ERROR);
                                 output.flush();
+                                System.out.println("confirmado");
                                 Message message = ParserToJSON.JsonToMessage(messageJson);
                                 deliver(message);
                             }
                         } catch (ClassNotFoundException ex) {
                             output.writeInt(Protocol.ERROR_OPERATON);
                             output.flush();
-                            break;
                         }
-
                         break;
                     }
-                    case Protocol.RECEIVE_COLLECTION: {
+                    case Protocol.PENDINGS: {
                         try {
                             String messagesJson = (String) input.readObject();
                             if(!messagesJson.isEmpty()){
+                                output.writeInt(Protocol.ERROR_NO_ERROR);
+                                output.flush();
                                 List<Message> messages = ParserToJSON.JsonToMessageList(messagesJson);
                                 for(Message message : messages){
                                     deliver(message);
+                                    System.out.println(message.getMessage());
                                 }
                             }
                         } catch (ClassNotFoundException ex) {
                             output.writeInt(Protocol.ERROR_OPERATON);
                             output.flush();
-                            break;
                         }
-                        output.writeInt(Protocol.ERROR_NO_ERROR);
-                        output.flush();
                         break;
                     }
                     case Protocol.LOGOUT: {
@@ -186,8 +185,8 @@ public class ServiceProxy implements IService{
                         }catch (ClassNotFoundException ex){
                             output.writeInt(Protocol.ERROR_OPERATON);
                             output.flush();
-                            break;
                         }
+                        break;
                     }
                     case Protocol.CONTACT_DELIVER: {
                         try{
@@ -196,8 +195,8 @@ public class ServiceProxy implements IService{
                         }catch (ClassNotFoundException ex){
                             output.writeInt(Protocol.ERROR_OPERATON);
                             output.flush();
-                            break;
                         }
+                        break;
                     }
                     case Protocol.LOGIN: {
                         try{
@@ -206,8 +205,8 @@ public class ServiceProxy implements IService{
                         }catch (ClassNotFoundException ex){
                             output.writeInt(Protocol.ERROR_OPERATON);
                             output.flush();
-                            break;
                         }
+                        break;
                     }
                 }
                 if(output != null){
@@ -238,6 +237,7 @@ public class ServiceProxy implements IService{
         try{
             output.writeInt(Protocol.PENDINGS);
             output.flush();
+            Thread.sleep(3500);
         }catch (Exception e){
             e.printStackTrace();
         }

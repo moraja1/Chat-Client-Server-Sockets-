@@ -4,32 +4,42 @@
         "jaison"
     ],
     "conversations": {
-        "daniel": [
-        ],
         "jaison": [
             {
-                "message": "Hola",
+                "message": "no se puede con esta cagada la verdad",
                 "remitent": "jaison",
                 "destinatary": "jose",
-                "dateTime": "2022-11-17T14:38:28"
+                "dateTime": "2022-11-18T12:01:37"
             },
             {
-                "message": "Todo bien",
+                "message": "Estoy hartisimo",
                 "remitent": "jaison",
                 "destinatary": "jose",
-                "dateTime": "2022-11-17T14:39:05"
+                "dateTime": "2022-11-18T12:01:40"
             },
             {
-                "message": "Que paaaa",
+                "message": "pero bueno",
                 "remitent": "jaison",
                 "destinatary": "jose",
-                "dateTime": "2022-11-17T16:11:22"
+                "dateTime": "2022-11-18T12:01:43"
             },
             {
-                "message": "Ahora sí mae",
+                "message": "ni modo",
                 "remitent": "jaison",
                 "destinatary": "jose",
-                "dateTime": "2022-11-17T16:22:10"
+                "dateTime": "2022-11-18T12:01:44"
+            },
+            {
+                "message": "hay que seguir dandole durisimo",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-18T12:01:50"
+            },
+            {
+                "message": "no se puede con esta cagada la verdad",
+                "remitent": "jaison",
+                "destinatary": "jose",
+                "dateTime": "2022-11-18T12:01:37"
             }
         ]
     }

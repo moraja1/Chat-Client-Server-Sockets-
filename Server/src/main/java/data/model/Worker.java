@@ -23,7 +23,7 @@ public class Worker implements Runnable{
     private User user;
     boolean continuar = true;
     private Thread threadParent;
-    private MessageDetails lastMessage;
+    private String pending;
     private boolean needsConfirmation = false;
     private boolean messageConfirmed = false;
     private boolean contactConfirmation = false;
@@ -45,12 +45,21 @@ public class Worker implements Runnable{
     private void sendPendingMessages() {
         //Send Pending Messages
         List<Message> pendingMessages = service.getPendingMessages(user);
-
-        if(!pendingMessages.isEmpty()) {
-            MessageDetails m = new MessageDetails(pendingMessages.get(0));
-            server.deliver(m);
+        if(!pendingMessages.isEmpty()){
+            List<MessageDetails> messages = new ArrayList<>();
+            for(Message m : pendingMessages){
+                messages.add(new MessageDetails(m));
+            }
+            String messagesJson = ParserToJSON.PendingMessagesToJson(messages);
+            pending = messagesJson;
+            try{
+                output.writeInt(Protocol.PENDINGS);
+                output.writeObject(messagesJson);
+                output.flush();
+            }catch (Exception e){}
         }
     }
+
     public void listen(){
         int method;
         String messageJson;
@@ -77,7 +86,6 @@ public class Worker implements Runnable{
                     case Protocol.POST:
                         if(needsConfirmation){
                             saveLastMessage();
-                            sendPendingMessages();
                         }
                         messageJson = null;
                         try {
@@ -90,10 +98,7 @@ public class Worker implements Runnable{
                         }
                         break;
                     case Protocol.ERROR_NO_ERROR:
-                        if(needsConfirmation){
-                            messageConfirmed();
-                        }
-                        sendPendingMessages();
+                        messageConfirmed();
                         break;
                     case Protocol.CONTACT_DELIVER:
                         if(needsConfirmation){
@@ -109,9 +114,6 @@ public class Worker implements Runnable{
                         }
                         break;
                     case Protocol.PENDINGS:
-                        if(needsConfirmation){
-                            saveLastMessage();
-                        }
                         sendPendingMessages();
                         break;
                     default:
@@ -125,21 +127,19 @@ public class Worker implements Runnable{
         }
     }
     private void messageConfirmed() {
-        service.messageDelivered(lastMessage);
-        lastMessage = null;
+        service.messageDelivered(pending);
+        pending = null;
         needsConfirmation = false;
     }
     private void saveLastMessage() {
-        if(lastMessage != null){
-            service.messageUndelivered(lastMessage);
+        if(pending != null){
+            service.messageUndelivered(pending);
         }
-        lastMessage = null;
+        pending = null;
         needsConfirmation = false;
     }
 
     public void deliver(MessageDetails message){
-        lastMessage = message;
-        needsConfirmation = true;
         try {
             String messageJson = ParserToJSON.MessageToJson(message);
             output.writeInt(Protocol.DELIVER);
@@ -181,5 +181,13 @@ public class Worker implements Runnable{
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void setPending(String pending) {
+        this.pending = pending;
+    }
+
+    public void setNeedsConfirmation(boolean needsConfirmation) {
+        this.needsConfirmation = needsConfirmation;
     }
 }

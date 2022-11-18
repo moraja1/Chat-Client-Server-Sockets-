@@ -5,52 +5,22 @@
     "conversations": {
         "jaison": [
             {
-                "message": "Hola Todo bien?",
-                "remitent": "daniel",
-                "destinatary": "jaison",
-                "dateTime": "2022-11-17T13:09:27.609406100"
-            },
-            {
-                "message": "Estás desconectado",
-                "remitent": "daniel",
-                "destinatary": "jaison",
-                "dateTime": "2022-11-17T13:11:13.120479600"
-            },
-            {
-                "message": "Mae que todo bien?",
+                "message": "Mae que duro",
                 "remitent": "jaison",
                 "destinatary": "daniel",
-                "dateTime": "2022-11-17T14:24"
+                "dateTime": "2022-11-18T13:07:44"
             },
             {
-                "message": "Mae estoy probando",
+                "message": "Vale que usted no esta",
                 "remitent": "jaison",
                 "destinatary": "daniel",
-                "dateTime": "2022-11-17T16:13:27"
+                "dateTime": "2022-11-18T13:07:49"
             },
             {
-                "message": "",
+                "message": "porque mas duro todabia",
                 "remitent": "jaison",
                 "destinatary": "daniel",
-                "dateTime": "2022-11-17T16:13:27"
-            },
-            {
-                "message": "A ver que",
-                "remitent": "jaison",
-                "destinatary": "daniel",
-                "dateTime": "2022-11-17T16:13:38"
-            },
-            {
-                "message": "que mae entonces que",
-                "remitent": "daniel",
-                "destinatary": "jaison",
-                "dateTime": "2022-11-17T16:18:06.851865100"
-            },
-            {
-                "message": "Ya le entendió que está fallando?",
-                "remitent": "daniel",
-                "destinatary": "jaison",
-                "dateTime": "2022-11-17T16:18:14.822524200"
+                "dateTime": "2022-11-18T13:07:53"
             }
         ]
     }

@@ -74,8 +74,8 @@ public class Controller {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        localService.askContactState(model.getContactList());
                         localService.askPendingMessages();
+                        localService.askContactState(model.getContactList());
                     }
                 });
             }
@@ -119,7 +119,6 @@ public class Controller {
         if(!usernames.contains(message.getRemitent())){
             model.getContactList().add(new User(message.getRemitent()));
             view.setContactListValues(model.getContactList());
-            jsonFileAdmin.addNewContact(model.getCurrentUser().getUsername(), message.getRemitent());
         }
     }
     public void updateMessages(List<Message> messages) {
@@ -145,7 +144,6 @@ public class Controller {
         String uName = userSelected.getUsername();
 
         model.setUserSelected(userSelected);
-        List<String> messagesByUser = jsonFileAdmin.getConversationWith(model.getCurrentUser().getUsername(), uName);
         List<Message> messages = new ArrayList<>();
         for(Message m : model.getMessages()){
             if(uName.equals(m.getRemitent()) || uName.equals(m.getDestinatary())){

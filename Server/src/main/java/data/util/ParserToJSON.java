@@ -1,9 +1,9 @@
 package data.util;
 
+import com.google.protobuf.Message;
 import data.dao.UserDAO;
 import data.dto.MessageDetails;
 import data.dto.UserDetails;
-import data.model.repository.Message;
 import data.model.repository.User;
 import jakarta.json.Json;
 import jakarta.json.JsonReader;
@@ -55,5 +55,14 @@ public class ParserToJSON {
     public static String contactToJson(UserDetails contact) {
         Jsonb jsonb = JsonbBuilder.create();
         return jsonb.toJson(contact);
+    }
+    public static List<MessageDetails> JsonToMessages(String messagesJson) {
+        Jsonb jsonb = JsonbBuilder.create();
+        List<MessageDetails> messageList;
+        messageList = jsonb.fromJson(messagesJson, new ArrayList<MessageDetails>(){}.getClass().getGenericSuperclass());
+        if(messageList == null){
+            messageList = new ArrayList<>();
+        }
+        return messageList;
     }
 }
