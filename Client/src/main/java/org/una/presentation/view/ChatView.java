@@ -10,9 +10,6 @@ import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class ChatView extends JFrame {
@@ -115,6 +112,13 @@ public class ChatView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.logout();
+            }
+        });
+
+        srchBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.search(srchBar.getText());
             }
         });
         this.addWindowListener(new WindowAdapter() {

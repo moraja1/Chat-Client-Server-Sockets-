@@ -189,4 +189,11 @@ public class Controller {
         }
         printContacts(model.getContactList());
     }
+
+    public void search(String text) {
+        if(!text.isEmpty()){
+            User u = new User(text);
+            localService.searchContact(u);
+        }
+    }
 }

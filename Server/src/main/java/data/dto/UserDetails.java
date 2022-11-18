@@ -9,6 +9,10 @@ public class UserDetails {
     public UserDetails() {
     }
 
+    public UserDetails(String username) {
+        this.username = username;
+    }
+
     @JsonbProperty("username")
     public String getUsername() {
         return username;

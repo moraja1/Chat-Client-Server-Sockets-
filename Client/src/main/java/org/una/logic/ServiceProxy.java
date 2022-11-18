@@ -208,6 +208,20 @@ public class ServiceProxy implements IService{
                         }
                         break;
                     }
+                    case Protocol.SEARCH: {
+                        try{
+                            String user = (String) input.readObject();
+                            if(!user.isEmpty()){
+                                User u =
+                            }
+                        }catch (ClassNotFoundException ex){
+                            output.writeInt(Protocol.ERROR_OPERATON);
+                            output.flush();
+                        }
+                        break;
+                    }
+                    default:
+                        break;
                 }
                 if(output != null){
                     output.flush();
@@ -237,7 +251,18 @@ public class ServiceProxy implements IService{
         try{
             output.writeInt(Protocol.PENDINGS);
             output.flush();
-            Thread.sleep(3500);
+            Thread.sleep(1000);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void searchContact(User u) {
+        String userJson = ParserToJSON.UserToJson(u);
+        try{
+            output.writeInt(Protocol.SEARCH);
+            output.writeObject(userJson);
+            output.flush();
         }catch (Exception e){
             e.printStackTrace();
         }

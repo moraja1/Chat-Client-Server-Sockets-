@@ -16,7 +16,6 @@ import data.util.Protocol;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,5 +150,22 @@ public class Service {
     public void messageUndelivered(String pending) {
         MessageDetails messageDetails = ParserToJSON.JsonToMessage(pending);
         messageUndelivered(messageDetails);
+    }
+
+    public void searchContact(Worker worker, UserDetails contact) {
+        UserDAO userDAO = new UserDAO();
+        User u = userDAO.getSingleObject(contact.getUsername());
+        if(u != null){
+            UserDetails userDetails = new UserDetails(u.getUsername());
+            if(usersLoggedIn.contains(u)){
+                userDetails.setConnected(true);
+            }else{
+                userDetails.setConnected(false);
+            }
+            String user = ParserToJSON.contactToJson(userDetails);
+            worker.sendSearch(user);
+        }else{
+            worker.sendSearch("");
+        }
     }
 }

@@ -36,30 +36,10 @@ public class Worker implements Runnable{
         threadParent = new Thread(this, user.getUsername());
         threadParent.start();
     }
-
     @Override
     public void run() {
         listen();
     }
-
-    private void sendPendingMessages() {
-        //Send Pending Messages
-        List<Message> pendingMessages = service.getPendingMessages(user);
-        if(!pendingMessages.isEmpty()){
-            List<MessageDetails> messages = new ArrayList<>();
-            for(Message m : pendingMessages){
-                messages.add(new MessageDetails(m));
-            }
-            String messagesJson = ParserToJSON.PendingMessagesToJson(messages);
-            pending = messagesJson;
-            try{
-                output.writeInt(Protocol.PENDINGS);
-                output.writeObject(messagesJson);
-                output.flush();
-            }catch (Exception e){}
-        }
-    }
-
     public void listen(){
         int method;
         String messageJson;
@@ -116,6 +96,15 @@ public class Worker implements Runnable{
                     case Protocol.PENDINGS:
                         sendPendingMessages();
                         break;
+                    case Protocol.SEARCH:
+                        try {
+                            messageJson = (String) input.readObject();
+                            UserDetails contact = ParserToJSON.JsonToContact(messageJson);
+                            service.searchContact(this, contact);
+                        } catch (ClassNotFoundException ex) {
+                            ex.printStackTrace();
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -138,7 +127,23 @@ public class Worker implements Runnable{
         pending = null;
         needsConfirmation = false;
     }
-
+    private void sendPendingMessages() {
+        //Send Pending Messages
+        List<Message> pendingMessages = service.getPendingMessages(user);
+        if(!pendingMessages.isEmpty()){
+            List<MessageDetails> messages = new ArrayList<>();
+            for(Message m : pendingMessages){
+                messages.add(new MessageDetails(m));
+            }
+            String messagesJson = ParserToJSON.PendingMessagesToJson(messages);
+            pending = messagesJson;
+            try{
+                output.writeInt(Protocol.PENDINGS);
+                output.writeObject(messagesJson);
+                output.flush();
+            }catch (Exception e){}
+        }
+    }
     public void deliver(MessageDetails message){
         try {
             String messageJson = ParserToJSON.MessageToJson(message);
@@ -182,12 +187,19 @@ public class Worker implements Runnable{
             ex.printStackTrace();
         }
     }
-
     public void setPending(String pending) {
         this.pending = pending;
     }
-
     public void setNeedsConfirmation(boolean needsConfirmation) {
         this.needsConfirmation = needsConfirmation;
+    }
+    public void sendSearch(String userToJson) {
+        try {
+            output.writeInt(Protocol.SEARCH);
+            output.writeObject(userToJson);
+            output.flush();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

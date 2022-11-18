@@ -15,6 +15,6 @@ public class Protocol {
 
     public static final int ERROR_LOGIN=12;
     public static final int ERROR_OPERATON = 14;
-    public static final int RECEIVE_COLLECTION = 17;
     public static final int PENDINGS = 16;
+    public static final int SEARCH = 17;
 }
