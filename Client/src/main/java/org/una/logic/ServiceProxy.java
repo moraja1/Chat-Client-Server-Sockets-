@@ -54,9 +54,7 @@ public class ServiceProxy implements IService{
     }
     @Override
     public void logout(User u) throws IOException {
-        String contactListJson = jsonFileAdmin.getLogoutContactList(u.getUsername());
         output.writeInt(Protocol.LOGOUT);
-        output.writeObject(contactListJson);
         output.flush();
         this.stop();
         this.disconnect();
@@ -96,14 +94,6 @@ public class ServiceProxy implements IService{
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-    private void deliver( final Message message ) throws IOException {
-        SwingUtilities.invokeLater(new Runnable(){
-               public void run(){
-                   controller.deliver(message);
-               }
-           }
-        );
     }
     //-----------------------------------------------------------------------------------------------------------------
 
@@ -152,7 +142,7 @@ public class ServiceProxy implements IService{
                                 output.flush();
                                 System.out.println("confirmado");
                                 Message message = ParserToJSON.JsonToMessage(messageJson);
-                                deliver(message);
+                                controller.deliver(message);
                             }
                         } catch (ClassNotFoundException ex) {
                             output.writeInt(Protocol.ERROR_OPERATON);
@@ -163,15 +153,16 @@ public class ServiceProxy implements IService{
                     case Protocol.PENDINGS: {
                         try {
                             String messagesJson = (String) input.readObject();
+                            output.writeInt(Protocol.ERROR_NO_ERROR);
+                            output.flush();
                             if(!messagesJson.isEmpty()){
-                                output.writeInt(Protocol.ERROR_NO_ERROR);
-                                output.flush();
                                 List<Message> messages = ParserToJSON.JsonToMessageList(messagesJson);
                                 for(Message message : messages){
-                                    deliver(message);
+                                    controller.deliver(message);
                                     System.out.println(message.getMessage());
                                 }
                             }
+                            controller.contactStates();
                         } catch (ClassNotFoundException ex) {
                             output.writeInt(Protocol.ERROR_OPERATON);
                             output.flush();
@@ -212,7 +203,9 @@ public class ServiceProxy implements IService{
                         try{
                             String user = (String) input.readObject();
                             if(!user.isEmpty()){
-                                User u =
+                                controller.searchResult(true, user);
+                            }else{
+                                controller.searchResult(false, user);
                             }
                         }catch (ClassNotFoundException ex){
                             output.writeInt(Protocol.ERROR_OPERATON);
@@ -251,7 +244,6 @@ public class ServiceProxy implements IService{
         try{
             output.writeInt(Protocol.PENDINGS);
             output.flush();
-            Thread.sleep(1000);
         }catch (Exception e){
             e.printStackTrace();
         }

@@ -1,125 +1,69 @@
 {
     "contacts": [
-        "daniel",
-        "jose"
+        "arnoldo",
+        "enrique",
+        "jose",
+        "manfred"
     ],
     "conversations": {
-        "daniel": [
+        "arnoldo": [
             {
-                "message": "Mae definitivamente que parida pa",
+                "message": "Que mae!",
                 "remitent": "jaison",
-                "destinatary": "daniel",
-                "dateTime": "2022-11-18T11:56:19.746088700"
+                "destinatary": "arnoldo",
+                "dateTime": "2022-11-19T18:19:35.250639100"
             },
             {
-                "message": "Pero bueno es lo que hay",
-                "remitent": "jaison",
-                "destinatary": "daniel",
-                "dateTime": "2022-11-18T11:56:24.326531"
+                "message": "Todo bien pa",
+                "remitent": "arnoldo",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-19T18:19:41.356861200"
             },
             {
-                "message": "ni modo",
+                "message": "Mae aqui pura vida",
                 "remitent": "jaison",
-                "destinatary": "daniel",
-                "dateTime": "2022-11-18T11:56:25.583840"
+                "destinatary": "arnoldo",
+                "dateTime": "2022-11-19T18:19:49.607382"
             },
             {
-                "message": "Mae que duro",
+                "message": "Terminando esta vara ya por dicha",
                 "remitent": "jaison",
-                "destinatary": "daniel",
-                "dateTime": "2022-11-18T13:07:44.345347200"
+                "destinatary": "arnoldo",
+                "dateTime": "2022-11-19T18:19:56.120515200"
             },
             {
-                "message": "Vale que usted no esta",
+                "message": "",
                 "remitent": "jaison",
-                "destinatary": "daniel",
-                "dateTime": "2022-11-18T13:07:49.356349900"
+                "destinatary": "arnoldo",
+                "dateTime": "2022-11-19T18:21:02.888671600"
             },
             {
-                "message": "porque mas duro todabia",
+                "message": "",
                 "remitent": "jaison",
-                "destinatary": "daniel",
-                "dateTime": "2022-11-18T13:07:53.163015600"
+                "destinatary": "arnoldo",
+                "dateTime": "2022-11-19T18:21:15.775864500"
             }
         ],
-        "jose": [
+        "enrique": [
             {
-                "message": "Mae siaaaaaaaaaaaaas loli en serio! jiji",
+                "message": "Conectese",
                 "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T11:58:00.922893700"
+                "destinatary": "enrique",
+                "dateTime": "2022-11-19T18:20:17.183975700"
             },
             {
-                "message": "Pero creo que ya por fin",
+                "message": "Payaso",
                 "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T11:58:09.769343200"
-            },
+                "destinatary": "enrique",
+                "dateTime": "2022-11-19T18:20:18.834157"
+            }
+        ],
+        "manfred": [
             {
-                "message": "Logre superarme yo mismo",
-                "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T11:58:16.733404700"
-            },
-            {
-                "message": "no se",
-                "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T11:58:17.904096900"
-            },
-            {
-                "message": "vamos a ver que tal",
-                "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T11:58:21.715322900"
-            },
-            {
-                "message": "Talvez si o talvez no pero sea como sea ",
-                "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T11:58:31.028908800"
-            },
-            {
-                "message": "Voy a ver que tal",
-                "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T11:58:35.240597600"
-            },
-            {
-                "message": "mae que va",
-                "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T12:01:30.314162700"
-            },
-            {
-                "message": "no se puede con esta cagada la verdad",
-                "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T12:01:37.442879900"
-            },
-            {
-                "message": "Estoy hartisimo",
-                "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T12:01:40.398593"
-            },
-            {
-                "message": "pero bueno",
-                "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T12:01:42.931935300"
-            },
-            {
-                "message": "ni modo",
-                "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T12:01:44.024441800"
-            },
-            {
-                "message": "hay que seguir dandole durisimo",
-                "remitent": "jaison",
-                "destinatary": "jose",
-                "dateTime": "2022-11-18T12:01:49.816599600"
+                "message": "Lindaaaaa paaaaaaaa",
+                "remitent": "manfred",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-19T18:31:16"
             }
         ]
     }

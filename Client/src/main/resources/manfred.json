@@ -1,0 +1,15 @@
+{
+    "contacts": [
+        "jaison"
+    ],
+    "conversations": {
+        "jaison": [
+            {
+                "message": "Lindaaaaa paaaaaaaa",
+                "remitent": "manfred",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-19T18:31:16.097442500"
+            }
+        ]
+    }
+}

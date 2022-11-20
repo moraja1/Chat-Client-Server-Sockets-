@@ -1,0 +1,21 @@
+{
+    "contacts": [
+        "jaison"
+    ],
+    "conversations": {
+        "jaison": [
+            {
+                "message": "Conectese",
+                "remitent": "jaison",
+                "destinatary": "enrique",
+                "dateTime": "2022-11-19T18:20:17"
+            },
+            {
+                "message": "Payaso",
+                "remitent": "jaison",
+                "destinatary": "enrique",
+                "dateTime": "2022-11-19T18:20:19"
+            }
+        ]
+    }
+}

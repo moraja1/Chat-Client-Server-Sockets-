@@ -25,8 +25,7 @@ public class Worker implements Runnable{
     private Thread threadParent;
     private String pending;
     private boolean needsConfirmation = false;
-    private boolean messageConfirmed = false;
-    private boolean contactConfirmation = false;
+    private List<UserDetails> contacts = new ArrayList<>();
     public Worker(Server server, ObjectInputStream input, ObjectOutputStream output, User user, Service service) {
         this.server = server;
         this.input = input;
@@ -54,10 +53,7 @@ public class Worker implements Runnable{
                             saveLastMessage();
                         }
                         try {
-                            String contactListJson = (String) input.readObject();
-                            List<User> contactList = ParserToJSON.JsonToUsers(contactListJson);
-                            contactList = service.getPersistedUsers(contactList);
-                            service.logout(user, contactList); //Remove user from loggedin Users*/
+                            service.logout(user); //Remove user from loggedin Users*/
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -88,6 +84,7 @@ public class Worker implements Runnable{
                         try {
                             messageJson = (String) input.readObject();
                             UserDetails contact = ParserToJSON.JsonToContact(messageJson);
+                            contacts.add(contact);
                             service.sendContactState(this, contact);
                         } catch (ClassNotFoundException ex) {
                             ex.printStackTrace();
@@ -111,6 +108,11 @@ public class Worker implements Runnable{
                 output.flush();
             } catch (IOException  ex) {
                 saveLastMessage();
+                List<User> userContacts = new ArrayList<>();
+                for(UserDetails u : contacts){
+                    userContacts.add(new User(u.getUsername()));
+                }
+                service.logout(user);
                 continuar = false;
             }                        
         }
@@ -129,24 +131,28 @@ public class Worker implements Runnable{
     }
     private void sendPendingMessages() {
         //Send Pending Messages
+        String messagesJson;
         List<Message> pendingMessages = service.getPendingMessages(user);
         if(!pendingMessages.isEmpty()){
             List<MessageDetails> messages = new ArrayList<>();
             for(Message m : pendingMessages){
                 messages.add(new MessageDetails(m));
             }
-            String messagesJson = ParserToJSON.PendingMessagesToJson(messages);
-            pending = messagesJson;
-            try{
-                output.writeInt(Protocol.PENDINGS);
-                output.writeObject(messagesJson);
-                output.flush();
-            }catch (Exception e){}
+            messagesJson = ParserToJSON.PendingMessagesToJson(messages);
+        }else{
+            messagesJson = "";
         }
+        pending = messagesJson;
+        try{
+            output.writeInt(Protocol.PENDINGS);
+            output.writeObject(messagesJson);
+            output.flush();
+        }catch (Exception e){}
     }
     public void deliver(MessageDetails message){
         try {
             String messageJson = ParserToJSON.MessageToJson(message);
+            pending = messageJson;
             output.writeInt(Protocol.DELIVER);
             output.writeObject(messageJson);
             output.flush();
@@ -187,12 +193,6 @@ public class Worker implements Runnable{
             ex.printStackTrace();
         }
     }
-    public void setPending(String pending) {
-        this.pending = pending;
-    }
-    public void setNeedsConfirmation(boolean needsConfirmation) {
-        this.needsConfirmation = needsConfirmation;
-    }
     public void sendSearch(String userToJson) {
         try {
             output.writeInt(Protocol.SEARCH);
@@ -201,5 +201,9 @@ public class Worker implements Runnable{
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public List<UserDetails> getContacts() {
+        return contacts;
     }
 }

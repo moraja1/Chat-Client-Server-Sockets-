@@ -12,6 +12,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.JsonbConfig;
+import jakarta.json.bind.JsonbException;
 
 import java.io.StringReader;
 import java.sql.Timestamp;
@@ -58,10 +59,14 @@ public class ParserToJSON {
     }
     public static List<MessageDetails> JsonToMessages(String messagesJson) {
         Jsonb jsonb = JsonbBuilder.create();
-        List<MessageDetails> messageList;
-        messageList = jsonb.fromJson(messagesJson, new ArrayList<MessageDetails>(){}.getClass().getGenericSuperclass());
-        if(messageList == null){
-            messageList = new ArrayList<>();
+        List<MessageDetails> messageList = new ArrayList<>();
+        if(messagesJson != null && !messagesJson.isEmpty()){
+            try{
+                messageList = jsonb.fromJson(messagesJson, new ArrayList<MessageDetails>(){}.getClass().getGenericSuperclass());
+            }catch (JsonbException e){
+                MessageDetails m = ParserToJSON.JsonToMessage(messagesJson);
+                messageList.add(m);
+            }
         }
         return messageList;
     }

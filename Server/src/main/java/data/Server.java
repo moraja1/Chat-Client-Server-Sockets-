@@ -124,8 +124,9 @@ public class Server {
             service.messageUndelivered(message);
         }
     }
-    public void removeWorker(User u, List<User> contactList){
+    public void removeWorker(User u){
         List<Worker> removeWorkers = new ArrayList<>(workers);
+
         synchronized (workers){
             Iterator<Worker> i = workers.listIterator();
             while(i.hasNext()){
@@ -134,8 +135,8 @@ public class Server {
                     wk.stop();
                     removeWorkers.remove(wk);
                 }
-                if(!contactList.isEmpty()){
-                    if(contactList.contains(wk.getUser())){
+                for(UserDetails user : wk.getContacts()){
+                    if(user.getUsername().equals(u.getUsername())){
                         wk.sendLogoutMessage(u.getUsername());
                     }
                 }
@@ -163,11 +164,12 @@ public class Server {
         //Saco el sistema del bucle
         exit = true;
     }
-    public void newUserConnected(User user, UserDetails contact) {
-        String destinatary = contact.getUsername();
+    public void newUserConnected(User user) {
         for(Worker w : workers){
-            if(w.getUser().getUsername().equals(destinatary)){
-                w.sendLoginMessage(user.getUsername());
+            for(UserDetails u : w.getContacts()){
+                if(u.getUsername().equals(user.getUsername())){
+                    w.sendLoginMessage(user.getUsername());
+                }
             }
         }
     }

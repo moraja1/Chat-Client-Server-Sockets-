@@ -70,15 +70,13 @@ public class Controller {
             User user = new User(view.getUsername().getText(), new String(view.getClave().getPassword()));
             User logged = localService.login(user);
             initWindow(logged);
-            if(!model.getContactList().isEmpty()){
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        localService.askPendingMessages();
-                        localService.askContactState(model.getContactList());
-                    }
-                });
-            }
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    localService.askPendingMessages();
+                }
+            });
+
         } catch (LoginException e) {
             JOptionPane.showMessageDialog(null, "El usuario ingresado no existe", "No se pudo iniciar sessión", JOptionPane.WARNING_MESSAGE);
         } catch (OperationException | IOException | ClassNotFoundException ex){
@@ -102,9 +100,9 @@ public class Controller {
             try {
             localService.logout(model.getCurrentUser());
             model.setMessages(new ArrayList<>());
-            model.setCurrentUser(null);
-            model.setUserSelected(null);
-            model.setContactList(null);
+            model.setCurrentUser(new User());
+            model.setUserSelected(new User());
+            model.setContactList(new ArrayList<>());
             view.logoutExecuted();
             } catch (Exception ex) {}
             model.setCurrentUser(null);
@@ -118,7 +116,10 @@ public class Controller {
         }
         if(!usernames.contains(message.getRemitent())){
             model.getContactList().add(new User(message.getRemitent()));
+            localService.askContactState(model.getContactList());
             view.setContactListValues(model.getContactList());
+        }else{
+            updateMessages(model.getMessages());
         }
     }
     public void updateMessages(List<Message> messages) {
@@ -164,11 +165,13 @@ public class Controller {
         printContacts(model.getContactList());
     }
     public void updateContacts(String contactJson) {
-        User contact = ParserToJSON.JsonToUser(contactJson);
-        for(User u : model.getContactList()) {
-            if (u.getUsername().equals(contact.getUsername())) {
-                if (u.isConected() != contact.isConected()) {
-                    u.setConected(contact.isConected());
+        if(!contactJson.isEmpty()){
+            User contact = ParserToJSON.JsonToUser(contactJson);
+            for(User u : model.getContactList()) {
+                if (u.getUsername().equals(contact.getUsername())) {
+                    if (u.isConected() != contact.isConected()) {
+                        u.setConected(contact.isConected());
+                    }
                 }
             }
         }
@@ -192,8 +195,34 @@ public class Controller {
 
     public void search(String text) {
         if(!text.isEmpty()){
-            User u = new User(text);
-            localService.searchContact(u);
+            List<User> contacts = new ArrayList<>();
+            for(User user : model.getContactList()){
+                if(user.getUsername().contains(text)){
+                    contacts.add(user);
+                }
+            }
+            if(!contacts.isEmpty()){
+                view.setContactListValues(contacts);
+            }else{
+                User u = new User(text);
+                localService.searchContact(u);
+            }
         }
+    }
+
+    public void searchResult(boolean b, String user) {
+        if(b) {
+            User u = ParserToJSON.JsonToUser(user);
+            model.getContactList().add(u);
+            List<User> result = new ArrayList<>();
+            result.add(u);
+            view.setContactListValues(result);
+        }else{
+            view.setContactListValues(new ArrayList<>());
+        }
+    }
+
+    public void contactStates() {
+        localService.askContactState(model.getContactList());
     }
 }

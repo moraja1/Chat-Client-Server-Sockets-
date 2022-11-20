@@ -41,6 +41,7 @@ public class Service {
                 output.writeObject(userJson);
                 output.flush();
                 server.createWorker(input, output, user);
+                server.newUserConnected(user);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -84,8 +85,8 @@ public class Service {
             throw new LoginException("Usuario no registrado");
         }
     }
-    public void logout(User user, List<User> contactList) throws Exception{
-        server.removeWorker(user, contactList);
+    public void logout(User user) {
+        server.removeWorker(user);
         usersLoggedIn.remove(user);
     }
     public List<Message> getPendingMessages(User user) {
@@ -105,13 +106,15 @@ public class Service {
     }
     public void messageDelivered(String messagesJson) {
         List<MessageDetails> messages = ParserToJSON.JsonToMessages(messagesJson);
-        UserDAO userDAO = new UserDAO();
-        User destinatary = userDAO.getSingleObject(messages.get(0).getDestinatary());
-        List<Message> messagesPersisted = getPendingMessages(destinatary);
-        if(!messagesPersisted.isEmpty()){
-            MessageDAO dao = new MessageDAO();
-            for(Message me : messagesPersisted){
-                dao.erase(me);
+        if(!messages.isEmpty()){
+            UserDAO userDAO = new UserDAO();
+            User destinatary = userDAO.getSingleObject(messages.get(0).getDestinatary());
+            List<Message> messagesPersisted = getPendingMessages(destinatary);
+            if(!messagesPersisted.isEmpty()){
+                MessageDAO dao = new MessageDAO();
+                for(Message me : messagesPersisted){
+                    dao.erase(me);
+                }
             }
         }
     }
@@ -141,7 +144,6 @@ public class Service {
         for (User u : usersLoggedIn){
             if(u.getUsername().equals(contact.getUsername())){
                 contact.setConnected(true);
-                server.newUserConnected(worker.getUser(), contact);
             }
             String contactJson = ParserToJSON.contactToJson(contact);
             worker.sendContactState(contactJson);
@@ -163,6 +165,7 @@ public class Service {
                 userDetails.setConnected(false);
             }
             String user = ParserToJSON.contactToJson(userDetails);
+            worker.getContacts().add(userDetails);
             worker.sendSearch(user);
         }else{
             worker.sendSearch("");

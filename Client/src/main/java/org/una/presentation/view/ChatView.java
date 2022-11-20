@@ -7,6 +7,8 @@ import org.una.presentation.controller.Controller;
 import org.una.presentation.model.User;
 
 import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.*;
@@ -95,9 +97,11 @@ public class ChatView extends JFrame {
         post.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String text = mensaje.getText();
-                controller.post(text);
-                mensaje.setText("");
+                if (contactList.getSelectedIndex() != -1) {
+                    String text = mensaje.getText();
+                    controller.post(text);
+                    mensaje.setText("");
+                }
             }
         });
         contactList.addMouseListener(new MouseAdapter() {
@@ -119,6 +123,14 @@ public class ChatView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.search(srchBar.getText());
+            }
+        });
+        srchBar.addCaretListener(new CaretListener() {
+            @Override
+            public void caretUpdate(CaretEvent e) {
+                if (srchBar.getText().isEmpty()) {
+                    controller.updateContacts("");
+                }
             }
         });
         this.addWindowListener(new WindowAdapter() {
@@ -179,6 +191,9 @@ public class ChatView extends JFrame {
         clave.setBackground(Color.WHITE);
         username.setText("");
         clave.setText("");
+        contactList.setModel(new DefaultListModel());
+        messages.setText("");
+        srchBar.setText("");
         panel.validate();
     }
 

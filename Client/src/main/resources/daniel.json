@@ -1,27 +1,6 @@
 {
     "contacts": [
-        "jaison"
     ],
     "conversations": {
-        "jaison": [
-            {
-                "message": "Mae que duro",
-                "remitent": "jaison",
-                "destinatary": "daniel",
-                "dateTime": "2022-11-18T13:07:44"
-            },
-            {
-                "message": "Vale que usted no esta",
-                "remitent": "jaison",
-                "destinatary": "daniel",
-                "dateTime": "2022-11-18T13:07:49"
-            },
-            {
-                "message": "porque mas duro todabia",
-                "remitent": "jaison",
-                "destinatary": "daniel",
-                "dateTime": "2022-11-18T13:07:53"
-            }
-        ]
     }
 }

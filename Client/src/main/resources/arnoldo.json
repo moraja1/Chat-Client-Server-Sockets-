@@ -1,0 +1,33 @@
+{
+    "contacts": [
+        "jaison"
+    ],
+    "conversations": {
+        "jaison": [
+            {
+                "message": "Que mae!",
+                "remitent": "jaison",
+                "destinatary": "arnoldo",
+                "dateTime": "2022-11-19T18:19:35.250639100"
+            },
+            {
+                "message": "Todo bien pa",
+                "remitent": "arnoldo",
+                "destinatary": "jaison",
+                "dateTime": "2022-11-19T18:19:41.356861200"
+            },
+            {
+                "message": "Mae aqui pura vida",
+                "remitent": "jaison",
+                "destinatary": "arnoldo",
+                "dateTime": "2022-11-19T18:19:49.607382"
+            },
+            {
+                "message": "Terminando esta vara ya por dicha",
+                "remitent": "jaison",
+                "destinatary": "arnoldo",
+                "dateTime": "2022-11-19T18:19:56.120515200"
+            }
+        ]
+    }
+}
